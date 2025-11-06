@@ -27,17 +27,25 @@ model User {
 }
 
 model Event {
-    id Int @id @default(autoincrement())
-    title String @unique
-    date DateTime
-    location String
-    description String
-    eventType eventType @default(other) @map("event_type")
-    ticketsAvailable Int @map("tickets_available")
-    createdAt DateTime @default(now()) @map("created_at")
-    // author User @relation(fields: [userId], references: [id])
-    // userId Int
-    @@map("events")
+  id Int @id @default(autoincrement())
+  title String @unique
+  date DateTime
+  location String
+  description String
+  eventType eventType @default(other) @map("event_type")
+  ticketsAvailable Int @map("tickets_available")
+  createdAt DateTime @default(now()) @map("created_at")
+  // author User @relation(fields: [userId], references: [id])
+  // userId Int
+  @@map("events")
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  orderDate DateTime @map("order_date")
+  total Float
+  orderStatus orderStatus @default(completed) @map("order_status")
+  createdAt DateTime @default(now()) @map("created_at")
 }
 
 enum Role {
