@@ -21,7 +21,7 @@ model User {
   birthday DateTime
   createdAt DateTime @default(now()) @map("created_at")
   password String
-  role Role @default(customer)
+  role Role @default(CUSTOMER)
   events Event[]
   orders Order[]
   @@map("users")
@@ -33,7 +33,7 @@ model Event {
   date DateTime
   location String
   description String
-  eventType eventType @default(other) @map("event_type")
+  eventType eventType @default(OTHER) @map("event_type")
   ticketsAvailable Int @map("tickets_available")
   createdAt DateTime @default(now()) @map("created_at")
   organizer User @relation(fields: [organizerId], references: [id])
@@ -46,7 +46,7 @@ model Order {
   id Int @id @default(autoincrement())
   orderDate DateTime @default(now()) @map("order_date")
   total Float
-  orderStatus orderStatus @default(completed) @map("order_status")
+  orderStatus orderStatus @default(COMPLETED) @map("order_status")
   createdAt DateTime @default(now()) @map("created_at")
   orderTickets OrderTicket[]
   user User @relation(fields: [userId], references: [id])
@@ -58,7 +58,7 @@ model Ticket {
   id Int @id @default(autoincrement())
   price Float
   seatNumber String @map("seat_number")
-  ticketStatus ticketStatus @default(available) @map("ticket_status")
+  ticketStatus ticketStatus @default(AVAILABLE) @map("ticket_status")
   createdAt DateTime @default(now()) @map("created_at")
   event Event @relation(fields: [eventId], references: [id])
   eventId Int @map("event_id")
@@ -77,24 +77,24 @@ model OrderTicket {
 }
 
 enum Role {
-  customer
-  admin
-  organizer
+  CUSTOMER
+  ADMIN
+  ORGANIZER
 }
 
 enum eventType {
-  sports
-  music
-  movies
-  other
+  SPORTS
+  MUSIC
+  MOVIES
+  OTHER
 }
 
 enum ticketStatus {
-  available
-  sold
+  AVAILABLE
+  SOLD
 }
 
 enum orderStatus {
-  completed
-  cancelled
+  COMPLETED
+  CANCELLED
 }
