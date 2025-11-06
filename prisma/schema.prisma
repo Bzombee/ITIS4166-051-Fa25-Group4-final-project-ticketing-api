@@ -37,20 +37,20 @@ model Event {
   ticketsAvailable Int @map("tickets_available")
   createdAt DateTime @default(now()) @map("created_at")
   organizer User @relation(fields: [organizerId], references: [id])
-  organizerId Int
+  organizerId Int @map("organizer_id")
   tickets Ticket[]
   @@map("events")
 }
 
 model Order {
   id Int @id @default(autoincrement())
-  orderDate DateTime @map("order_date")
+  orderDate DateTime @default(now()) @map("order_date")
   total Float
   orderStatus orderStatus @default(completed) @map("order_status")
   createdAt DateTime @default(now()) @map("created_at")
-  tickets Ticket[]
+  orderTickets OrderTicket[]
   user User @relation(fields: [userId], references: [id])
-  userId Int
+  userId Int @map("user_id")
   @@map("orders")
 }
 
@@ -61,9 +61,19 @@ model Ticket {
   ticketStatus ticketStatus @default(available) @map("ticket_status")
   createdAt DateTime @default(now()) @map("created_at")
   event Event @relation(fields: [eventId], references: [id])
-  eventId Int
-  orders Order[]
+  eventId Int @map("event_id")
+  orderTickets OrderTicket[]
   @@map("tickets")
+}
+
+model OrderTicket {
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId Int @map("order_id")
+  ticket  Ticket @relation(fields: [ticketId], references: [id])
+  ticketId Int @map("ticket_id")
+
+  @@id([orderId, ticketId])
+  @@map("order_tickets")
 }
 
 enum Role {
