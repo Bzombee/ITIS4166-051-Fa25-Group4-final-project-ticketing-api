@@ -13,3 +13,52 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  birthday DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+  password String
+  role Role @default(customer)
+  // posts Post[]
+  @@map("users")
+}
+
+model Event {
+    id Int @id @default(autoincrement())
+    title String @unique
+    date DateTime
+    location String
+    description String
+    eventType eventType @default(other) @map("event_type")
+    ticketsAvailable Int @map("tickets_available")
+    createdAt DateTime @default(now()) @map("created_at")
+    // author User @relation(fields: [userId], references: [id])
+    // userId Int
+    @@map("events")
+}
+
+enum Role {
+  customer
+  admin
+  organizer
+}
+
+enum eventType {
+  sports
+  music
+  movies
+  other
+}
+
+enum ticketStatus {
+  available
+  sold
+}
+
+enum orderStatus {
+  completed
+  cancelled
+}
