@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../prisma/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  birthday  DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+  password  String
+  role      Role     @default(CUSTOMER)
+  events    Event[]
+  orders    Order[]
+
+  @@map("users")
+}
+
+model Event {
+  id               Int       @id @default(autoincrement())
+  title            String    @unique
+  date             DateTime
+  location         String
+  description      String
+  eventType        eventType @default(OTHER) @map("event_type")
+  ticketsAvailable Int       @map("tickets_available")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  organizer        User      @relation(fields: [organizerId], references: [id])
+  organizerId      Int       @map("organizer_id")
+  tickets          Ticket[]
+
+  @@map("events")
+}
+
+model Order {
+  id           Int           @id @default(autoincrement())
+  orderDate    DateTime      @default(now()) @map("order_date")
+  total        Float
+  orderStatus  orderStatus   @default(COMPLETED) @map("order_status")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  orderTickets OrderTicket[]
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int           @map("user_id")
+
+  @@map("orders")
+}
+
+model Ticket {
+  id           Int           @id @default(autoincrement())
+  price        Float
+  seatNumber   String        @map("seat_number")
+  ticketStatus ticketStatus  @default(AVAILABLE) @map("ticket_status")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  event        Event         @relation(fields: [eventId], references: [id])
+  eventId      Int           @map("event_id")
+  orderTickets OrderTicket[]
+
+  @@map("tickets")
+}
+
+model OrderTicket {
+  order    Order  @relation(fields: [orderId], references: [id])
+  orderId  Int    @map("order_id")
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+  ticketId Int    @map("ticket_id")
+
+  @@id([orderId, ticketId])
+  @@map("order_tickets")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  ORGANIZER
+}
+
+enum eventType {
+  SPORTS
+  MUSIC
+  MOVIES
+  OTHER
+}
+
+enum ticketStatus {
+  AVAILABLE
+  SOLD
+}
+
+enum orderStatus {
+  COMPLETED
+  CANCELLED
+}
