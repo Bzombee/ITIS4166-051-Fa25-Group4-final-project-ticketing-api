@@ -1,6 +1,6 @@
 import * as orderService from '../services/orderService.js';
 
-export async function create(req, res, next) {
+export async function createOrderHandler(req, res, next) {
   try {
     const { userId, ticketIds } = req.body;
     const order = await orderService.createOrder(userId, ticketIds);
@@ -13,7 +13,7 @@ export async function create(req, res, next) {
   }
 }
 
-export async function getById(req, res, next) {
+export async function getOrderByIdHandler(req, res, next) {
   try {
     const { id } = req.params;
     const order = await orderService.getOrderById(parseInt(id));
@@ -28,7 +28,7 @@ export async function getById(req, res, next) {
   }
 }
 
-export async function getForUser(req, res, next) {
+export async function getOrderForUserHandler(req, res, next) {
   try {
     const { userId } = req.params;
     const orders = await orderService.getOrdersForUser(parseInt(userId));
@@ -39,7 +39,7 @@ export async function getForUser(req, res, next) {
   }
 }
 
-export async function cancel(req, res, next) {
+export async function cancelOrderHandler(req, res, next) {
   try {
     const { id } = req.params;
     const order = await orderService.cancelOrder(parseInt(id));

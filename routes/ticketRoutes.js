@@ -3,16 +3,14 @@ import {
   validateTicket,
   validateTicketUpdate,
 } from '../middleware/ticketValidators.js';
-import * as controller from '../controllers/ticketController.js';
+import { createTicketHandler, getForEventHandler, getTicketByIdHandler, updateTicketHandler, deleteTicketHandler } from '../controllers/ticketController.js';
 
 const router = express.Router();
 
-router.post('/:eventId/tickets', validateTicket, controller.create);
-
-router.get('/:eventId/tickets', controller.getForEvent);
-router.get('/:id', controller.getById);
-
-router.put('/:id', validateTicketUpdate, controller.update);
-router.delete('/:id', controller.remove);
+router.post('/:eventId/tickets', validateTicket, createTicketHandler);
+router.get('/:eventId/tickets', getForEventHandler);
+router.get('/:id', getTicketByIdHandler);
+router.put('/:id', validateTicketUpdate, updateTicketHandler);
+router.delete('/:id', deleteTicketHandler);
 
 export default router;

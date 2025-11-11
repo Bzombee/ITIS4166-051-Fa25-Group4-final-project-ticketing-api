@@ -1,8 +1,6 @@
-// logic not all implemented
-
 import * as ticketService from '../services/ticketService.js';
 
-export async function create(req, res) {
+export async function createTicketHandler(req, res) {
   const { eventId } = req.params;
   const { tickets } = req.body;
   const created = await ticketService.createTicketsForEvent(
@@ -16,7 +14,7 @@ export async function create(req, res) {
   });
 }
 
-export async function getForEvent(req, res) {
+export async function getForEventHandler(req, res) {
   const { eventId } = req.params;
   const { status } = req.query;
   const tickets = await ticketService.getTicketsForEvent(
@@ -26,7 +24,7 @@ export async function getForEvent(req, res) {
   res.status(200).json(tickets);
 }
 
-export async function getById(req, res) {
+export async function getTicketByIdHandler(req, res) {
   const { id } = req.params;
   const ticket = await ticketService.getTicketById(parseInt(id));
 
@@ -37,7 +35,7 @@ export async function getById(req, res) {
   res.status(200).json(ticket);
 }
 
-export async function update(req, res) {
+export async function updateTicketHandler(req, res) {
   const { id } = req.params;
   const data = {};
 
@@ -60,7 +58,7 @@ export async function update(req, res) {
     .json({ message: 'ticket has been updated', ticketId: ticket.id });
 }
 
-export async function remove(req, res) {
+export async function deleteTicketHandler(req, res) {
   const { id } = req.params;
   await ticketService.deleteTicket(parseInt(id));
   res.status(200).json({ message: 'ticket has been deleted' });

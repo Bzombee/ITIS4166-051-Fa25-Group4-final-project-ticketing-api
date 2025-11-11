@@ -3,15 +3,14 @@ import {
   validateUserCreate,
   validateUserUpdate,
 } from '../middleware/userValidators.js';
-import * as controller from '../controllers/userController.js';
+import { getAllUserHandler, getUserByIdHandler, createUserHandler, updateUserHandler, deleteUserHandler } from '../controllers/userController.js';
 
 const router = express.Router();
 
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
-router.post('/', validateUserCreate, controller.create);
-router.put('/:id', validateUserUpdate, controller.update);
-
-router.delete('/:id', controller.remove);
+router.get('/', getAllUserHandler);
+router.get('/:id', getUserByIdHandler);
+router.post('/', validateUserCreate, createUserHandler);
+router.put('/:id', validateUserUpdate, updateUserHandler);
+router.delete('/:id', deleteUserHandler);
 
 export default router;

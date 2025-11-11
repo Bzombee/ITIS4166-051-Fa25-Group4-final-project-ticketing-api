@@ -1,6 +1,6 @@
 import * as userService from '../services/userService.js';
 
-export async function getAll(req, res, next) {
+export async function getAllUserHandler(req, res, next) {
   try {
     const users = await userService.getAllUsers();
     res.status(200).json(users);
@@ -9,7 +9,7 @@ export async function getAll(req, res, next) {
   }
 }
 
-export async function getById(req, res, next) {
+export async function getUserByIdHandler(req, res, next) {
   try {
     const { id } = req.params;
     const user = await userService.getUserById(parseInt(id));
@@ -20,7 +20,7 @@ export async function getById(req, res, next) {
   }
 }
 
-export async function create(req, res, next) {
+export async function createUserHandler(req, res, next) {
   try {
     const { name, email, password, birthday, role = 'CUSTOMER' } = req.body;
     const user = await userService.createUser({
@@ -39,7 +39,7 @@ export async function create(req, res, next) {
   }
 }
 
-export async function update(req, res, next) {
+export async function updateUserHandler(req, res, next) {
   try {
     const { id } = req.params;
     const data = {};
@@ -54,7 +54,7 @@ export async function update(req, res, next) {
   }
 }
 
-export async function remove(req, res, next) {
+export async function deleteUserHandler(req, res, next) {
   try {
     const { id } = req.params;
     await userService.deleteUser(parseInt(id));

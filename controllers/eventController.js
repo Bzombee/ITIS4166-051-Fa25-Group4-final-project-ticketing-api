@@ -1,6 +1,6 @@
 import * as eventService from '../services/eventService.js';
 
-export async function create(req, res, next) {
+export async function createEventHandler(req, res, next) {
   try {
     const {
       title,
@@ -31,7 +31,7 @@ export async function create(req, res, next) {
   }
 }
 
-export async function getAll(req, res, next) {
+export async function getAllEventHandler(req, res, next) {
   try {
     const events = await eventService.getAllEvents();
     res.status(200).json(events);
@@ -40,7 +40,7 @@ export async function getAll(req, res, next) {
   }
 }
 
-export async function getById(req, res, next) {
+export async function getEventByIdHandler(req, res, next) {
   try {
     const { id } = req.params;
     const event = await eventService.getEventById(parseInt(id));
@@ -53,7 +53,7 @@ export async function getById(req, res, next) {
   }
 }
 
-export async function update(req, res, next) {
+export async function updateEventHandler(req, res, next) {
   try {
     const { id } = req.params;
     const updateData = {};
@@ -84,7 +84,7 @@ export async function update(req, res, next) {
   }
 }
 
-export async function remove(req, res, next) {
+export async function deleteEventHandler(req, res, next) {
   try {
     const { id } = req.params;
     await eventService.deleteEvent(parseInt(id));
