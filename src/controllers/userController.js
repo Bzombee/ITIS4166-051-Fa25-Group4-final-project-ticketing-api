@@ -1,65 +1,38 @@
-import * as userService from '../services/userService.js';
+import {getAllUsers, getUser, updateUser, deleteUser, updateUserRole} from '../services/userService.js';
+import bcrypt from 'bcrypt';
 
 export async function getAllUserHandler(req, res, next) {
-  try {
-    const users = await userService.getAllUsers();
-    res.status(200).json(users);
-  } catch (error) {
-    next(error);
-  }
+  const users = await getAllUsers();
+  res.status(200).json(users);
 }
 
-export async function getUserByIdHandler(req, res, next) {
-  try {
-    const { id } = req.params;
-    const user = await userService.getUserById(parseInt(id));
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    res.status(200).json(user);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function createUserHandler(req, res, next) {
-  try {
-    const { name, email, password, birthday, role = 'CUSTOMER' } = req.body;
-    const user = await userService.createUser({
-      name,
-      email,
-      password,
-      birthday: new Date(birthday),
-      role,
-    });
-    res.status(201).json({
-      message: `user created with id of ${user.id}`,
-      userId: user.id,
-    });
-  } catch (error) {
-    next(error);
-  }
+export async function getUserHandler(req, res, next) {
+  const user = await getUser(req.user.id);
+  res.status(200).json(user);
 }
 
 export async function updateUserHandler(req, res, next) {
-  try {
-    const { id } = req.params;
-    const data = {};
-    if (req.body.name !== undefined) data.name = req.body.name;
-    if (req.body.birthday !== undefined)
-      data.birthday = new Date(req.body.birthday);
-    const user = await userService.updateUser(parseInt(id), data);
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    res.status(200).json({ message: 'User updated', userId: user.id });
-  } catch (error) {
-    next(error);
-  }
+  let id = parseInt(req.user.id);
+  const updates = {};
+  if (req.body.name) updates.name = req.body.name;
+  if (req.body.email) updates.email = req.body.email;
+  if (req.body.birthday) updates.email = req.body.birthday;
+  if (req.body.password) updates.password = await bcrypt.hash(req.body.password, 10);
+
+  const updatedUser = await updateUser(id, updates);
+  res.status(200).json(updatedUser);
+
 }
 
 export async function deleteUserHandler(req, res, next) {
-  try {
-    const { id } = req.params;
-    await userService.deleteUser(parseInt(id));
-    res.status(200).json({ message: 'User deleted' });
-  } catch (error) {
-    next(error);
-  }
+  let id = parseInt(req.user.id);
+  await deleteUser(id);
+  res.status(204).send();
+}
+
+export async function updateUserRoleHandler(req, res) {
+    let id = parseInt(req.params.id);
+    let updates = req.body;
+    const updatedUserRole = await updateUserRole(id, updates);
+    res.status(200).json(updatedUserRole);
 }
