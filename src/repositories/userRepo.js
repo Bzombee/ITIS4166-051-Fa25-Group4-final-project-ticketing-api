@@ -1,7 +1,10 @@
 import prisma from '../config/db.js';
 
 export async function createUser(data) {
-  return await prisma.user.create({data: data, omit: {password: true}});
+  const user = await prisma.user.create({ data: data });
+   
+  const { password, ...userWithoutPassword } = user;
+  return userWithoutPassword;
 }
 
 export async function findUserByEmail(email) {

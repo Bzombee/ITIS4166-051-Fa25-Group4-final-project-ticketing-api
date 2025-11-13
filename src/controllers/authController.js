@@ -1,8 +1,8 @@
 import { signUp, logIn } from '../services/authService.js';
 
 export async function signUpHandler(req, res) {
-  const { name, email, password, birthday } = req.body;
-  const newUser = await signUp(name, email, password, birthday);
+  const { name, email, birthday, password } = req.body;
+  const newUser = await signUp(name, email, birthday, password);
   res
     .status(201)
     .json({ message: `New user created with an id of ${newUser.id}` });

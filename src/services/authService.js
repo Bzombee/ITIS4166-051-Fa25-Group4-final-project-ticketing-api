@@ -5,20 +5,24 @@ import { createUser, findUserByEmail } from '../repositories/userRepo.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
-export async function signUp(name, email, password, birthday) {
+export async function signUp(name, email, birthday, password) {
   const hashedPassword = await bcrypt.hash(password, 10);
+  const birthdayDate = new Date(birthday);
+
   try {
-    const newUser = await createUser({ name, email, birthday, password: hashedPassword });
+    const newUser = await createUser({ name, email, birthday: birthdayDate, password: hashedPassword });
+    console.log('Created user:', newUser);
     return newUser;
   } catch (error) {
+    console.error('Signup failed:', error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if ((error.code = 'P2002')) {
-        const error = new Error('Email has already been used');
-        error.status = 409;
-        throw error;
+      if (error.code === 'P2002') {
+        const err = new Error('Email has already been used');
+        err.status = 409;
+        throw err;
       }
-      throw error;
     }
+    throw error; // Always rethrow anything else
   }
 }
 
