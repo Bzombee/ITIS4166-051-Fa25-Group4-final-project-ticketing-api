@@ -1,4 +1,4 @@
-import prisma from '../config/prismaClient.js';
+import prisma from '../config/db.js';
 
 export async function getAllTickets() {
   return await prisma.ticket.findMany();

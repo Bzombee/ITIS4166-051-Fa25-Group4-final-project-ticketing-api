@@ -1,90 +1,31 @@
-import prisma from '../config/prismaClient.js';
+import * as orderRepo from '../repositories/orderRepo.js';
+import prisma from '../config/db.js';
 
-/**
- * Create order: checks ticket availability, creates order and orderTickets,
- * and marks tickets as SOLD inside a transaction.
- */
 export async function createOrder(userId, ticketIds) {
   const ids = ticketIds.map((id) => parseInt(id, 10));
-
-  if (ids.length === 0) {
-    throw new Error('no tickets provided');
-  }
+  if (ids.length === 0) throw new Error('No tickets provided');
 
   const tickets = await prisma.ticket.findMany({ where: { id: { in: ids } } });
+  if (tickets.length !== ids.length) throw new Error('Some tickets not found');
 
-  if (tickets.length !== ids.length) {
-    throw new Error('tickets not found');
-  }
+  const unavailable = tickets.filter((t) => t.ticketStatus !== 'AVAILABLE');
+  if (unavailable.length > 0) throw new Error('Some tickets are not available');
 
-  if (tickets.some((t) => t.ticketStatus !== 'AVAILABLE')) {
-    throw new Error('tickets are not available');
-  }
+  const total = tickets.reduce((sum, t) => sum + t.price, 0);
 
-  //   get total price
-  let total = 0;
-  for (const ticket of tickets) {
-    total += ticket.price;
-  }
-
-  const order = await prisma.order.create({
-    data: {
-      userId,
-      total,
-      orderStatus: 'COMPLETED',
-      orderTickets: {
-        create: ids.map((ticketId) => ({ ticketId })),
-      },
-    },
-    include: { orderTickets: true },
-  });
-
-  await prisma.ticket.updateMany({
-    where: { id: { in: ids } },
-    data: { ticketStatus: 'SOLD' },
-  });
-
-  return order;
+  return await orderRepo.createOrderTransaction(userId, ids, total);
 }
 
 export async function getOrderById(id) {
-  return await prisma.order.findUnique({
-    where: { id },
-    include: { orderTickets: { include: { ticket: true } }, user: true },
-  });
+  return await orderRepo.getOrderById(id);
 }
 
 export async function getOrdersForUser(userId) {
-  return await prisma.order.findMany({
-    where: { userId },
-    include: { orderTickets: { include: { ticket: true } } },
-    orderBy: { orderDate: 'desc' },
-  });
+  return await orderRepo.getOrdersForUser(userId);
 }
 
-export async function cancelOrder(id, requestingUser) {
-  const order = await prisma.order.findUnique({
-    where: { id },
-    include: { orderTickets: true },
-  });
-  if (!order) throw new Error('Order not found');
-
-  if (order.orderStatus === 'CANCELLED')
-    throw new Error('Order already cancelled');
-
-  const result = await prisma.$transaction(async (tx) => {
-    const updated = await tx.order.update({
-      where: { id },
-      data: { orderStatus: 'CANCELLED' },
-    });
-    await tx.ticket.updateMany({
-      where: { id: { in: order.orderTickets.map((ot) => ot.ticketId) } },
-      data: { ticketStatus: 'AVAILABLE' },
-    });
-    return updated;
-  });
-
-  return result;
+export async function cancelOrder(id) {
+  return await orderRepo.cancelOrderTransaction(id);
 }
 
 export default { createOrder, getOrderById, getOrdersForUser, cancelOrder };
