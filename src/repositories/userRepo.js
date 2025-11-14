@@ -28,7 +28,7 @@ export async function findUser(userId) {
 export async function update(userId, updateData) {
   try {
     const updatedUser = await prisma.user.update({
-      where: { userId },
+      where: { id: userId },
       data: updateData,
       omit: { password: true },
     });
@@ -42,7 +42,7 @@ export async function update(userId, updateData) {
 export async function remove(userId) {
 try {
     const deletedUser = await prisma.user.delete({
-      where: { userId },
+      where: { id: userId },
     });
     return deletedUser;
   } catch (error) {
@@ -54,7 +54,7 @@ try {
 export async function updateRole(userId, updates) {
   try {
     const updatedUser = await prisma.user.update({
-      where: { userId },
+      where: { id: userId },
       data: updates,
       omit: { password: true },
     });

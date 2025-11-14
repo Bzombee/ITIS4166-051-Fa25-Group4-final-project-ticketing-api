@@ -117,7 +117,7 @@ export const validateRegisterUser = [
  ];
 
 
-const validRoles = ["USER", "ADMIN", "ORGANIZER"]
+const validRoles = ["CUSTOMER", "ADMIN", "ORGANIZER"]
 export const validateUpdateUserRole = [
   body("role")
     .trim()

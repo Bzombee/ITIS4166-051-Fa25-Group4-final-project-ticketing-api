@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/', authenticate, authroizeRoles('ADMIN'), getAllUserHandler);
 router.get('/me', authenticate, getUserHandler);
 router.put('/me', authenticate, validateUpdateUser, updateUserHandler);
-router.delete('/me', deleteUserHandler);
+router.delete('/me', authenticate, deleteUserHandler);
 router.patch('/:id/role', authenticate, authroizeRoles('ADMIN'), validateUpdateUserRole, updateUserRoleHandler);
 
 export default router;
