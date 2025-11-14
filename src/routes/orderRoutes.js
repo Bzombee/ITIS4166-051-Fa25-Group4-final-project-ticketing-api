@@ -1,12 +1,19 @@
 import express from 'express';
+import { authenticate } from '../middleware/authenticate.js';
 import { validateOrder } from '../middleware/orderValidators.js';
-import { createOrderHandler, getOrderByIdHandler, getOrderForUserHandler, cancelOrderHandler } from '../controllers/orderController.js';
+import {
+  createOrderHandler,
+  getMyOrderByIdHandler,
+  getMyOrdersHandler,
+  cancelOrderHandler,
+} from '../controllers/orderController.js';
 
 const router = express.Router();
 
+router.use(authenticate);
 router.post('/', validateOrder, createOrderHandler);
-router.get('/:id', getOrderByIdHandler);
-router.get('/user/:userId', getOrderForUserHandler);
-router.put('/:id/cancel', cancelOrderHandler);
+router.get('/me', getMyOrdersHandler);
+router.get('/me/:id', getMyOrderByIdHandler);
+router.patch('/:id/status', cancelOrderHandler);
 
 export default router;
