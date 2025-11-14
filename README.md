@@ -6,3 +6,10 @@
 1. Run: ```npx prisma migrate dev```  
 1. Run: ```npx prisma generate```
 1. Run: ```node .\prisma\seed.js```
+
+## How to login
+1. Open up User Login postman request
+2. Go to Body, then Raw, and then select JSON
+3. Type in the email and password in correct format
+4. The JWT will now be saved under the environment variable `{{JWT}}`
+5. When using api endpoints that require authentication: go to authorization, then select Bearer Token, and then type in `{{JWT}}`
