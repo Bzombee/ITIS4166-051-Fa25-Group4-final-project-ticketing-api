@@ -65,6 +65,18 @@ export async function cancelOrderTransaction(id) {
   });
 }
 
+export async function remove(id) {
+try {
+    const deletedOrder = await prisma.order.delete({
+      where: { id: id },
+    });
+    return deletedOrder;
+  } catch (error) {
+    if (error.code === 'P2025') return null;
+    throw error;
+  }
+}
+
 export default {
   createOrderTransaction,
   getOrderById,

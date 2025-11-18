@@ -6,6 +6,7 @@ import {
   getMyOrderByIdHandler,
   getMyOrdersHandler,
   cancelOrderHandler,
+  deleteOrderHandler
 } from '../controllers/orderController.js';
 import { authroizeRoles } from '../middleware/authorizeRoles.js';
 
@@ -16,6 +17,6 @@ router.post('/', authenticate, validateOrder, createOrderHandler);
 router.get('/me', authenticate, getMyOrdersHandler);
 router.get('/me/:id', authenticate, getMyOrderByIdHandler);
 router.patch('/:id/status', authenticate, cancelOrderHandler);
-router.delete('/:id', authenticate, authroizeRoles('ADMIN'))
+router.delete('/:id', authenticate, authroizeRoles('ADMIN'), deleteOrderHandler)
 
 export default router;

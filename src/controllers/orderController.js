@@ -67,3 +67,9 @@ export async function cancelOrderHandler(req, res, next) {
     next(error);
   }
 }
+
+export async function deleteOrderHandler(req, res, next) {
+  let id = parseInt(req.order.id);
+  await deleteOrder(id);
+  res.status(204).send();
+}

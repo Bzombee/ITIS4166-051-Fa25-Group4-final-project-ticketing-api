@@ -28,4 +28,14 @@ export async function cancelOrder(id) {
   return await orderRepo.cancelOrderTransaction(id);
 }
 
+export async function deleteOrder(id) {
+  const result = await remove(id);
+  if (result) return;
+  else {
+    const error = new Error(`Cannot find order with id ${id}`);
+    error.status = 404;
+    throw error;
+  }
+}
+
 export default { createOrder, getOrderById, getOrdersForUser, cancelOrder };
