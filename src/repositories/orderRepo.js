@@ -24,14 +24,14 @@ export async function createOrderTransaction(userId, ticketIds, total) {
   });
 }
 
-export async function getOrderById(id) {
+export async function getById(id) {
   return await prisma.order.findUnique({
     where: { id },
-    include: { orderTickets: { include: { ticket: true } }, user: true },
+    include: { orderTickets: { include: { ticket: true } } },
   });
 }
 
-export async function getOrdersForUser(userId) {
+export async function getOrders(userId) {
   return await prisma.order.findMany({
     where: { userId },
     include: { orderTickets: { include: { ticket: true } } },
@@ -79,7 +79,7 @@ try {
 
 export default {
   createOrderTransaction,
-  getOrderById,
-  getOrdersForUser,
+  // getOrderById,
+  // getOrdersForUser,
   cancelOrderTransaction,
 };

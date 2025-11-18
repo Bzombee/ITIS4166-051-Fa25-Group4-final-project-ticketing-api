@@ -1,4 +1,5 @@
 import * as orderService from '../services/orderService.js';
+import {getOrdersForUser, getOrderById} from '../services/orderService.js';
 
 export async function createOrderHandler(req, res, next) {
   try {
@@ -15,35 +16,39 @@ export async function createOrderHandler(req, res, next) {
   }
 }
 
-export async function getMyOrdersHandler(req, res, next) {
+export async function getOrdersHandler(req, res, next) {
   try {
     const userId = req.user.id;
-    const orders = await orderService.getOrdersForUser(parseInt(userId));
+    const orders = await getOrdersForUser(parseInt(userId));
     res.status(200).json(orders);
   } catch (error) {
     next(error);
   }
 }
 
-export async function getMyOrderByIdHandler(req, res, next) {
-  try {
-    const orderId = parseInt(req.params.id);
-    const userId = req.user.id; 
+export async function getOrderByIdHandler(req, res, next) {
+  // try {
+  //   const orderId = parseInt(req.params.id);
+  //   const userId = req.user.id; 
 
-    const order = await orderService.getOrderById(orderId);
+  //   const order = await getOrderById(orderId);
 
-    if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
+  //   if (!order) {
+  //     return res.status(404).json({ error: 'Order not found' });
+  //   }
 
-    if (order.userId !== userId) {
-      return res.status(403).json({ error: 'Forbidden: You do not own this order' });
-    }
+  //   if (order.userId !== userId) {
+  //     return res.status(403).json({ error: 'Forbidden: You do not own this order' });
+  //   }
 
-    res.status(200).json(order);
-  } catch (error) {
-    next(error);
-  }
+  //   res.status(200).json(order);
+  // } catch (error) {
+  //   next(error);
+  // }
+
+  let id = parseInt(req.params.id);
+  let order = await getOrderById(id);
+  res.status(200).json(order);
 }
 
 export async function cancelOrderHandler(req, res, next) {

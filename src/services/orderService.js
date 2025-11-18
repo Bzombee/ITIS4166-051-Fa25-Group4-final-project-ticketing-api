@@ -1,4 +1,5 @@
 import * as orderRepo from '../repositories/orderRepo.js';
+import {getOrders, getById} from '../repositories/orderRepo.js'
 import prisma from '../config/db.js';
 
 export async function createOrder(userId, ticketIds) {
@@ -17,11 +18,19 @@ export async function createOrder(userId, ticketIds) {
 }
 
 export async function getOrderById(id) {
-  return await orderRepo.getOrderById(id);
+  // return await getOrderById(id);
+
+  let result = await getById(id);
+  if (result) return result;
+  else {
+    const error = new Error(`Cannot find order with id ${id}`);
+    error.status = 404;
+    throw error;
+  }
 }
 
 export async function getOrdersForUser(userId) {
-  return await orderRepo.getOrdersForUser(userId);
+  return await getOrders(userId);
 }
 
 export async function cancelOrder(id) {
