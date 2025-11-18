@@ -1,18 +1,21 @@
+import { body } from 'express-validator';
 import { handleValidationErrors } from './handleValidationErrors.js';
-import { body, oneOf } from 'express-validator';
 
-export const validateOrder = (req, res, next) => {
-  const { ticketIds } = req.body;
+export const validateOrder = [
+  body('ticketIds')
+    .exists().withMessage('ticketIds is required')
+    .isArray({ min: 1 }).withMessage('ticketIds must be a non-empty array')
+    .custom((ticketIds) => {
+      const allNumbers = ticketIds.every(
+        (id) => !isNaN(parseInt(id, 10))
+      );
 
-  if (!ticketIds) {
-    return res.status(400).json({ error: 'ticketIds is required' });
-  }
+      if (!allNumbers) {
+        throw new Error('All ticketIds must be numeric');
+      }
 
-  if (!Array.isArray(ticketIds) || ticketIds.length === 0) {
-    return res
-      .status(400)
-      .json({ error: 'ticketIds must be a non-empty array' });
-  }
+      return true;
+    }),
 
-  next();
-};
+  handleValidationErrors
+];

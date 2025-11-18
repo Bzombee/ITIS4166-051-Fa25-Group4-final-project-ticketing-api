@@ -78,8 +78,5 @@ try {
 }
 
 export default {
-  createOrderTransaction,
-  // getOrderById,
-  // getOrdersForUser,
   cancelOrderTransaction,
 };

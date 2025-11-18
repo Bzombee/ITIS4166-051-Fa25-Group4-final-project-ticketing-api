@@ -1,16 +1,15 @@
 import * as orderService from '../services/orderService.js';
-import {getOrdersForUser, getOrderById} from '../services/orderService.js';
+import {getOrdersForUser, getOrderById, createOrder} from '../services/orderService.js';
 
 export async function createOrderHandler(req, res, next) {
   try {
-    const userId = req.user.id;
-    const { ticketIds } = req.body;
+    const data = {
+      userId: req.user.id,
+      ticketIds: req.body.ticketIds
+    }
 
-    const order = await orderService.createOrder(userId, ticketIds);
-    res.status(201).json({
-      message: `Order created with id of ${order.id}`,
-      orderId: order.id,
-    });
+    const newOrder = await createOrder(data);
+    res.status(201).json(newOrder);
   } catch (error) {
     next(error);
   }
@@ -27,25 +26,6 @@ export async function getOrdersHandler(req, res, next) {
 }
 
 export async function getOrderByIdHandler(req, res, next) {
-  // try {
-  //   const orderId = parseInt(req.params.id);
-  //   const userId = req.user.id; 
-
-  //   const order = await getOrderById(orderId);
-
-  //   if (!order) {
-  //     return res.status(404).json({ error: 'Order not found' });
-  //   }
-
-  //   if (order.userId !== userId) {
-  //     return res.status(403).json({ error: 'Forbidden: You do not own this order' });
-  //   }
-
-  //   res.status(200).json(order);
-  // } catch (error) {
-  //   next(error);
-  // }
-
   let id = parseInt(req.params.id);
   let order = await getOrderById(id);
   res.status(200).json(order);
