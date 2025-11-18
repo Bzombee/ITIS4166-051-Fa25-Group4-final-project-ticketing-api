@@ -26,7 +26,7 @@ async function main() {
       name: 'Bob Customer',
       email: 'bob@example.com',
       birthday: new Date('1995-09-22'),
-      password: await bcrypt.hash('bob1234', 10),
+      password: await bcrypt.hash('bob12345', 10),
       role: 'CUSTOMER',
     },
     {
