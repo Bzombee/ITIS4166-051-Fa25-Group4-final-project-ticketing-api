@@ -45,10 +45,12 @@ export async function cancelOrderTransaction(id) {
       where: { id },
       include: { orderTickets: true },
     });
-    if (!order) throw new Error('Order not found');
 
     if (order.orderStatus === 'CANCELLED') {
-      throw new Error('Order already cancelled');
+      // throw new Error('Order already cancelled');
+      const error = new Error(`Order already cancelled`);
+      error.status = 409;
+      throw error;
     }
 
     const updated = await tx.order.update({
@@ -66,17 +68,22 @@ export async function cancelOrderTransaction(id) {
 }
 
 export async function remove(id) {
-try {
-    const deletedOrder = await prisma.order.delete({
-      where: { id: id },
+  try {
+    return await prisma.$transaction(async (tx) => {
+
+      // delete child rows first
+      await tx.orderTicket.deleteMany({
+        where: { orderId: id }
+      });
+
+      // delete order afterwards
+      return await tx.order.delete({
+        where: { id: id }
+      });
+
     });
-    return deletedOrder;
   } catch (error) {
     if (error.code === 'P2025') return null;
     throw error;
   }
 }
-
-export default {
-  cancelOrderTransaction,
-};

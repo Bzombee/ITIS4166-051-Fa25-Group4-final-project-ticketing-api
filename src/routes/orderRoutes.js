@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticate } from '../middleware/authenticate.js';
-import { validateOrder } from '../middleware/orderValidators.js';
+import { validateOrder, validateUpdateOrderStatus } from '../middleware/orderValidators.js';
 import {
   createOrderHandler,
   getOrderByIdHandler,
@@ -17,7 +17,7 @@ const router = express.Router();
 router.post('/', authenticate, validateOrder, createOrderHandler);
 router.get('/me', authenticate, getOrdersHandler);
 router.get('/me/:id', authenticate, authorizeOrderOwnership, getOrderByIdHandler);
-router.patch('/:id/status', authenticate, cancelOrderHandler);
+router.patch('/:id/status', authenticate, authorizeOrderOwnership, validateUpdateOrderStatus, cancelOrderHandler);
 router.delete('/:id', authenticate, authroizeRoles('ADMIN'), deleteOrderHandler)
 
 export default router;

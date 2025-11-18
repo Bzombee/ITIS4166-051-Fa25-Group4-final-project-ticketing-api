@@ -1,5 +1,4 @@
-import * as orderService from '../services/orderService.js';
-import {getOrdersForUser, getOrderById, createOrder} from '../services/orderService.js';
+import {getOrdersForUser, getOrderById, createOrder, cancelOrder, deleteOrder} from '../services/orderService.js';
 
 export async function createOrderHandler(req, res, next) {
   try {
@@ -34,27 +33,18 @@ export async function getOrderByIdHandler(req, res, next) {
 export async function cancelOrderHandler(req, res, next) {
   try {
     const orderId = parseInt(req.params.id);
-    const userId = req.user.id; 
 
-    const orderToCancel = await orderService.getOrderById(orderId);
+    let updates = req.body;
 
-    if (!orderToCancel) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
-
-    if (orderToCancel.userId !== userId) {
-      return res.status(403).json({ error: 'Forbidden: You do not own this order' });
-    }
-
-    const order = await orderService.cancelOrder(orderId);
-    res.status(200).json({ message: 'Order cancelled', orderId: order.id });
+    const orderToCancel = await cancelOrder(orderId, updates);
+    res.status(200).json(orderToCancel);
   } catch (error) {
     next(error);
   }
 }
 
 export async function deleteOrderHandler(req, res, next) {
-  let id = parseInt(req.order.id);
+  const id = parseInt(req.params.id, 10);
   await deleteOrder(id);
   res.status(204).send();
 }

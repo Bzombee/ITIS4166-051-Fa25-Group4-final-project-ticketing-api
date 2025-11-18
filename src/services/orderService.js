@@ -1,5 +1,4 @@
-import * as orderRepo from '../repositories/orderRepo.js';
-import {getOrders, getById, createOrderTransaction} from '../repositories/orderRepo.js'
+import {getOrders, getById, createOrderTransaction, cancelOrderTransaction, remove} from '../repositories/orderRepo.js'
 import prisma from '../config/db.js';
 
 export async function createOrder({ userId, ticketIds }) {
@@ -44,8 +43,14 @@ export async function getOrdersForUser(userId) {
   return await getOrders(userId);
 }
 
-export async function cancelOrder(id) {
-  return await orderRepo.cancelOrderTransaction(id);
+export async function cancelOrder(id, updates) {
+  const cancelledOrder = await cancelOrderTransaction(id, updates);
+      if (cancelledOrder) return cancelledOrder;
+    else {
+        const error = new Error(`Cannot find order with id ${id}`);
+        error.status = 404;
+        throw error;
+    }
 }
 
 export async function deleteOrder(id) {
@@ -57,5 +62,3 @@ export async function deleteOrder(id) {
     throw error;
   }
 }
-
-export default { cancelOrder };

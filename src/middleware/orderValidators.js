@@ -19,3 +19,18 @@ export const validateOrder = [
 
   handleValidationErrors
 ];
+
+const validOrderStatuses = ["CANCELLED"]
+export const validateUpdateOrderStatus = [
+  body("status")
+    .trim()
+    .escape()
+    .exists({ checkFalsy: true })
+    .withMessage("must include a status")
+    .bail()
+    .isIn(validOrderStatuses)
+    .withMessage(`Status must be one of: ${validOrderStatuses.join(", ")}`),
+,
+
+    handleValidationErrors,
+]
