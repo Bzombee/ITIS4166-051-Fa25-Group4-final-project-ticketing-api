@@ -28,3 +28,10 @@ export async function deleteEvent(eventId) {
     where: { id: eventId },
   });
 }
+
+export async function getEventsByOrganizer(organizerId) {
+  return await prisma.event.findMany({
+    where: { organizerId },
+    orderBy: { date: 'asc' },
+  });
+}

@@ -40,6 +40,16 @@ export async function getAllEventHandler(req, res, next) {
   }
 }
 
+export async function getEventsByOrganizerHandler(req, res, next) {
+  try {
+    const { id } = req.params;
+    const events = await eventService.getEventsByOrganizer(id);
+    res.status(200).json(events);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function getEventByIdHandler(req, res, next) {
   try {
     const { id } = req.params;
