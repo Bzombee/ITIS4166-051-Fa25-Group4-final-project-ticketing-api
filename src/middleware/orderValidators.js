@@ -1,15 +1,36 @@
-export const validateOrder = (req, res, next) => {
-  const { userId, ticketIds } = req.body;
+import { body } from 'express-validator';
+import { handleValidationErrors } from './handleValidationErrors.js';
 
-  if (!userId || !ticketIds) {
-    return res.status(400).json({ error: 'userId and ticketIds are required' });
-  }
+export const validateOrder = [
+  body('ticketIds')
+    .exists().withMessage('ticketIds is required')
+    .isArray({ min: 1 }).withMessage('ticketIds must be a non-empty array')
+    .custom((ticketIds) => {
+      const allNumbers = ticketIds.every(
+        (id) => !isNaN(parseInt(id, 10))
+      );
 
-  if (!Array.isArray(ticketIds) || ticketIds.length === 0) {
-    return res
-      .status(400)
-      .json({ error: 'ticketIds must be a non-empty array' });
-  }
+      if (!allNumbers) {
+        throw new Error('All ticketIds must be numeric');
+      }
 
-  next();
-};
+      return true;
+    }),
+
+  handleValidationErrors
+];
+
+const validOrderStatuses = ["CANCELLED"]
+export const validateUpdateOrderStatus = [
+  body("status")
+    .trim()
+    .escape()
+    .exists({ checkFalsy: true })
+    .withMessage("must include a status")
+    .bail()
+    .isIn(validOrderStatuses)
+    .withMessage(`Status must be one of: ${validOrderStatuses.join(", ")}`),
+,
+
+    handleValidationErrors,
+]

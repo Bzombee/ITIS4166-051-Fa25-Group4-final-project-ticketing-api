@@ -1,12 +1,23 @@
 import express from 'express';
-import { validateOrder } from '../middleware/orderValidators.js';
-import { createOrderHandler, getOrderByIdHandler, getOrderForUserHandler, cancelOrderHandler } from '../controllers/orderController.js';
+import { authenticate } from '../middleware/authenticate.js';
+import { validateOrder, validateUpdateOrderStatus } from '../middleware/orderValidators.js';
+import {
+  createOrderHandler,
+  getOrderByIdHandler,
+  getOrdersHandler,
+  cancelOrderHandler,
+  deleteOrderHandler
+} from '../controllers/orderController.js';
+import { authroizeRoles } from '../middleware/authorizeRoles.js';
+import { authorizeOrderOwnership } from '../middleware/authorizeOwnership.js';
 
 const router = express.Router();
 
-router.post('/', validateOrder, createOrderHandler);
-router.get('/:id', getOrderByIdHandler);
-router.get('/user/:userId', getOrderForUserHandler);
-router.put('/:id/cancel', cancelOrderHandler);
+// Implement delete
+router.post('/', authenticate, validateOrder, createOrderHandler);
+router.get('/me', authenticate, getOrdersHandler);
+router.get('/me/:id', authenticate, authorizeOrderOwnership, getOrderByIdHandler);
+router.patch('/:id/status', authenticate, authorizeOrderOwnership, validateUpdateOrderStatus, cancelOrderHandler);
+router.delete('/:id', authenticate, authroizeRoles('ADMIN'), deleteOrderHandler)
 
 export default router;

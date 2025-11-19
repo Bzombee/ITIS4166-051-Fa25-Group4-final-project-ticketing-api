@@ -24,14 +24,14 @@ export async function createOrderTransaction(userId, ticketIds, total) {
   });
 }
 
-export async function getOrderById(id) {
+export async function getById(id) {
   return await prisma.order.findUnique({
     where: { id },
-    include: { orderTickets: { include: { ticket: true } }, user: true },
+    include: { orderTickets: { include: { ticket: true } } },
   });
 }
 
-export async function getOrdersForUser(userId) {
+export async function getOrders(userId) {
   return await prisma.order.findMany({
     where: { userId },
     include: { orderTickets: { include: { ticket: true } } },
@@ -45,10 +45,12 @@ export async function cancelOrderTransaction(id) {
       where: { id },
       include: { orderTickets: true },
     });
-    if (!order) throw new Error('Order not found');
 
     if (order.orderStatus === 'CANCELLED') {
-      throw new Error('Order already cancelled');
+      // throw new Error('Order already cancelled');
+      const error = new Error(`Order already cancelled`);
+      error.status = 409;
+      throw error;
     }
 
     const updated = await tx.order.update({
@@ -65,9 +67,23 @@ export async function cancelOrderTransaction(id) {
   });
 }
 
-export default {
-  createOrderTransaction,
-  getOrderById,
-  getOrdersForUser,
-  cancelOrderTransaction,
-};
+export async function remove(id) {
+  try {
+    return await prisma.$transaction(async (tx) => {
+
+      // delete child rows first
+      await tx.orderTicket.deleteMany({
+        where: { orderId: id }
+      });
+
+      // delete order afterwards
+      return await tx.order.delete({
+        where: { id: id }
+      });
+
+    });
+  } catch (error) {
+    if (error.code === 'P2025') return null;
+    throw error;
+  }
+}

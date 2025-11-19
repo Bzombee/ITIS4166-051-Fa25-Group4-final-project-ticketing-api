@@ -1,31 +1,64 @@
-import * as orderRepo from '../repositories/orderRepo.js';
+import {getOrders, getById, createOrderTransaction, cancelOrderTransaction, remove} from '../repositories/orderRepo.js'
 import prisma from '../config/db.js';
 
-export async function createOrder(userId, ticketIds) {
+export async function createOrder({ userId, ticketIds }) {
+  
   const ids = ticketIds.map((id) => parseInt(id, 10));
-  if (ids.length === 0) throw new Error('No tickets provided');
 
-  const tickets = await prisma.ticket.findMany({ where: { id: { in: ids } } });
-  if (tickets.length !== ids.length) throw new Error('Some tickets not found');
+  const tickets = await prisma.ticket.findMany({
+    where: { id: { in: ids } }
+  });
+
+  if (tickets.length !== ids.length) {
+    const error = new Error(`Some tickets could not be found`);
+    error.status = 404;
+    throw error;
+  }
 
   const unavailable = tickets.filter((t) => t.ticketStatus !== 'AVAILABLE');
-  if (unavailable.length > 0) throw new Error('Some tickets are not available');
+  if (unavailable.length > 0) {
+    const error = new Error(`Some tickets are not available`);
+    error.status = 409;
+    throw error;
+  }
 
   const total = tickets.reduce((sum, t) => sum + t.price, 0);
 
-  return await orderRepo.createOrderTransaction(userId, ids, total);
+  return await createOrderTransaction(userId, ids, total);
+
 }
 
 export async function getOrderById(id) {
-  return await orderRepo.getOrderById(id);
+
+  let result = await getById(id);
+  if (result) return result;
+  else {
+    const error = new Error(`Cannot find order with id ${id}`);
+    error.status = 404;
+    throw error;
+  }
 }
 
 export async function getOrdersForUser(userId) {
-  return await orderRepo.getOrdersForUser(userId);
+  return await getOrders(userId);
 }
 
-export async function cancelOrder(id) {
-  return await orderRepo.cancelOrderTransaction(id);
+export async function cancelOrder(id, updates) {
+  const cancelledOrder = await cancelOrderTransaction(id, updates);
+      if (cancelledOrder) return cancelledOrder;
+    else {
+        const error = new Error(`Cannot find order with id ${id}`);
+        error.status = 404;
+        throw error;
+    }
 }
 
-export default { createOrder, getOrderById, getOrdersForUser, cancelOrder };
+export async function deleteOrder(id) {
+  const result = await remove(id);
+  if (result) return;
+  else {
+    const error = new Error(`Cannot find order with id ${id}`);
+    error.status = 404;
+    throw error;
+  }
+}
