@@ -9,17 +9,42 @@ export async function createEventHandler(req, res, next) {
       description,
       eventType,
       ticketsAvailable,
-      organizerId,
     } = req.body;
+
+    // Validate required fields
+    if (!title || !location || ticketsAvailable === undefined) {
+      const error = new Error('Missing required fields: title, location, and ticketsAvailable are required');
+      error.status = 400;
+      throw error;
+    }
+
+    // Use authenticated user's ID as the organizer
+    // Only admins can create events for other organizers
+    let organizerId = req.user.id;
+    
+    if (req.body.organizerId && req.user.role === 'ADMIN') {
+      organizerId = parseInt(req.body.organizerId);
+    }
+
+    // Parse and validate date
+    let eventDate = new Date();
+    if (date) {
+      eventDate = new Date(date);
+      if (isNaN(eventDate.getTime())) {
+        const error = new Error('Invalid date format. Please use ISO 8601 format (e.g., 2025-12-01 or 2025-12-01T18:00:00Z)');
+        error.status = 400;
+        throw error;
+      }
+    }
 
     const event = await eventService.createEvent({
       title,
-      date: new Date(date),
+      date: eventDate,
       location,
-      description,
-      eventType,
+      description: description || '',
+      eventType: eventType || 'OTHER',
       ticketsAvailable: parseInt(ticketsAvailable),
-      organizerId: parseInt(organizerId),
+      organizerId,
     });
 
     res.status(201).json({

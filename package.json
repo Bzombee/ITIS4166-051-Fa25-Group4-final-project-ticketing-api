@@ -1,7 +1,7 @@
 {
   "name": "final-project-template",
   "version": "1.0.0",
-  "description": "",
+  "description": "1. Run: ```npm init -y```  \r 1. Configure the .env file to your local database\r 1. Run: ```npx prisma migrate dev```  \r 1. Run: ```npx prisma generate```\r 1. Run: ```node .\\prisma\\seed.js```",
   "license": "ISC",
   "author": "",
   "type": "module",
@@ -27,5 +27,14 @@
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bzombee/ITIS4166-051-Fa25-Group4-final-project-ticketing-api.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/Bzombee/ITIS4166-051-Fa25-Group4-final-project-ticketing-api/issues"
+  },
+  "homepage": "https://github.com/Bzombee/ITIS4166-051-Fa25-Group4-final-project-ticketing-api#readme"
 }
