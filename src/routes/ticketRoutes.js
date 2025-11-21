@@ -8,12 +8,12 @@ import { createTicketHandler, getForEventHandler, getTicketByIdHandler, updateTi
 const router = express.Router();
 
 router.post('/:eventId/tickets', validateTicket, createTicketHandler);
-router.get('/'); // implement get all tickets
-router.get('/me') //implement tickets for logged in user
+//router.get('/'); // implement get all tickets
+//router.get('/me') //implement tickets for logged in user
 router.get('/:eventId/tickets', getForEventHandler);
 router.get('/:id', getTicketByIdHandler);
 router.put('/:id', validateTicketUpdate, updateTicketHandler);
-router.patch(':id/status'); //implement changing ticket status
+//router.patch(':id/status'); //implement changing ticket status
 router.delete('/:id', deleteTicketHandler);
 
 export default router;
