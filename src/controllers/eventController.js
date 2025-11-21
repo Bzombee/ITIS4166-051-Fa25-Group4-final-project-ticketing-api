@@ -92,28 +92,43 @@ export async function updateEventHandler(req, res, next) {
   try {
     const { id } = req.params;
     const updateData = {};
-    [
-      'title',
-      'location',
-      'description',
-      'eventType',
-      'ticketsAvailable',
-    ].forEach((field) => {
-      if (req.body[field] !== undefined) updateData[field] = req.body[field];
+    
+    // Validate that at least one field is being updated
+    const allowedFields = ['title', 'location', 'description', 'eventType', 'ticketsAvailable', 'date'];
+    const hasUpdates = allowedFields.some(field => req.body[field] !== undefined);
+    
+    if (!hasUpdates) {
+      const error = new Error('At least one field must be provided for update');
+      error.status = 400;
+      throw error;
+    }
+
+    // Build update data object
+    ['title', 'location', 'description', 'eventType', 'ticketsAvailable'].forEach((field) => {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
     });
 
-    if (req.body.date) {
-      updateData.date = new Date(req.body.date);
+    // Parse and validate date if provided
+    if (req.body.date !== undefined) {
+      const eventDate = new Date(req.body.date);
+      if (isNaN(eventDate.getTime())) {
+        const error = new Error('Invalid date format. Please use ISO 8601 format (e.g., 2025-12-01 or 2025-12-01T18:00:00Z)');
+        error.status = 400;
+        throw error;
+      }
+      updateData.date = eventDate;
     }
+
     const event = await eventService.updateEvent(parseInt(id), updateData);
 
     if (!event) {
       return res.status(404).json({ error: 'event not found' });
     }
 
-    res
-      .status(200)
-      .json({ message: 'event has been updated', eventId: event.id });
+    // Return the full event object
+    res.status(200).json(event);
   } catch (error) {
     next(error);
   }
@@ -123,7 +138,7 @@ export async function deleteEventHandler(req, res, next) {
   try {
     const { id } = req.params;
     await eventService.deleteEvent(parseInt(id));
-    res.status(200).json({ message: 'event has been deleted' });
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
