@@ -11,6 +11,12 @@ export async function getTicketByIdHandler(req, res) {
   res.status(200).json(ticket);
 }
 
+export async function getForEventHandler(req, res) {
+  const { eventId } = req.params;
+  const tickets = await ticketService.getTicketsForEvent(parseInt(eventId));
+  res.status(200).json(tickets);
+}
+
 export async function createTicketHandler(req, res) {
   const { eventId } = req.params;
   const { tickets } = req.body;
@@ -23,16 +29,6 @@ export async function createTicketHandler(req, res) {
     message: `created ${created.length} tickets`,
     count: created.length,
   });
-}
-
-export async function getForEventHandler(req, res) {
-  const { eventId } = req.params;
-  const { status } = req.query;
-  const tickets = await ticketService.getTicketsForEvent(
-    parseInt(eventId),
-    status,
-  );
-  res.status(200).json(tickets);
 }
 
 export async function updateTicketHandler(req, res) {

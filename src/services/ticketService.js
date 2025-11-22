@@ -9,10 +9,22 @@ export async function getTicketById(id) {
   const ticket = await ticketRepo.getTicket(id);
   if (ticket) return ticket;
   else {
-      const error = new Error(`Cannot find ticket with id ${id}`);
-      error.status = 404;
-      throw error;
+    const error = new Error(`Cannot find ticket with id ${id}`);
+    error.status = 404;
+    throw error;
   }
+}
+
+export async function getTicketsForEvent(eventId) {
+  const event = await eventRepo.getEventById(eventId);
+  if (!event) {
+    const error = new Error(`Cannot find event with id ${eventId}`);
+    error.status = 404;
+    throw error;
+  }
+
+  let tickets = await ticketRepo.getAllTicketsByEvent(eventId);
+  return tickets;
 }
 
 export async function createTicketsForEvent(eventId, ticketsArray) {
@@ -28,21 +40,6 @@ export async function createTicketsForEvent(eventId, ticketsArray) {
     created.push(ticket);
   }
   return created;
-}
-
-export async function getTicketsForEvent(eventId, status) {
-  let tickets = await ticketRepo.getAllTickets();
-  tickets = tickets.filter((t) => {
-    if (t.eventId !== eventId) {
-      return false;
-    }
-    if (status && t.ticketStatus !== status) {
-      return false;
-    }
-
-    return true;
-  });
-  return tickets;
 }
 
 export async function updateTicket(id, data) {
