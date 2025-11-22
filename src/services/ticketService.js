@@ -27,19 +27,15 @@ export async function getTicketsForEvent(eventId) {
   return tickets;
 }
 
-export async function createTicketsForEvent(eventId, ticketsArray) {
-  // if event exists, otherwise throw error
-  const event = await eventRepo.getEventById(eventId);
+export async function createTicketsForEvent(data) {
+  const event = await eventRepo.getEventById(data.eventId);
   if (!event) {
-    throw new Error('Event not found');
+    const error = new Error(`Cannot find event with id ${data.eventId}`);
+    error.status = 404;
+    throw error;
   }
 
-  const created = [];
-  for (const t of ticketsArray) {
-    const ticket = await ticketRepo.createTicket({ ...t, eventId });
-    created.push(ticket);
-  }
-  return created;
+  return await ticketRepo.createTicket(data);
 }
 
 export async function updateTicket(id, data) {

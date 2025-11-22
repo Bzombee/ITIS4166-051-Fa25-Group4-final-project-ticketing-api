@@ -7,10 +7,18 @@ export function handleValidationErrors(req, res, next) {
     const emailConflict = messages.find((msg) =>
       msg.includes('already in use')
     );
+    const seatConflict = messages.find((msg) => 
+      msg.includes('already taken for this event')
+    )
     if (emailConflict) {
       return res
         .status(409)
         .json({ error: emailConflict });
+    }
+    if (seatConflict) {
+      return res
+        .status(409)
+        .json({ error: seatConflict });
     }
     return res
       .status(400)

@@ -34,3 +34,16 @@ export async function deleteTicket(ticketId) {
     where: { id: ticketId },
   });
 }
+
+export async function seatExistsInEvent(eventId, seatNumber) {
+  const result = await prisma.ticket.findFirst({
+    where: {
+      eventId,
+      seatNumber,
+    },
+    select: { id: true },
+  });
+
+  return result !== null;
+}
+

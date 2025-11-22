@@ -18,17 +18,15 @@ export async function getForEventHandler(req, res) {
 }
 
 export async function createTicketHandler(req, res) {
-  const { eventId } = req.params;
-  const { tickets } = req.body;
-  const created = await ticketService.createTicketsForEvent(
-    parseInt(eventId),
-    tickets,
-  );
+  const eventId = parseInt(req.params.eventId);
+  const data = {    
+    price: parseFloat(req.body.price),
+    seatNumber: req.body.seatNumber,
+    eventId: eventId,
+   };
+  const newTicket = await ticketService.createTicketsForEvent(data);
 
-  res.status(201).json({
-    message: `created ${created.length} tickets`,
-    count: created.length,
-  });
+  res.status(201).json({newTicket});
 }
 
 export async function updateTicketHandler(req, res) {
