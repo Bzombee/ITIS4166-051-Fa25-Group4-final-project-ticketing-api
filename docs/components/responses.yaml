@@ -1,0 +1,6 @@
+Unauthorized:
+  description: Unauthorized access (missing or invalid token)
+Forbidden:
+  description: Forbidden (insufficient permissions)
+BadRequest:
+  description: Validation error / bad request
