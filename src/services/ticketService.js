@@ -1,6 +1,10 @@
 import * as ticketRepo from '../repositories/ticketRepo.js';
 import * as eventRepo from '../repositories/eventRepo.js';
 
+export async function getAllTickets() {
+  return await ticketRepo.findAllTickets();
+}
+
 export async function createTicketsForEvent(eventId, ticketsArray) {
   // if event exists, otherwise throw error
   const event = await eventRepo.getEventById(eventId);

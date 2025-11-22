@@ -1,5 +1,10 @@
 import * as ticketService from '../services/ticketService.js';
 
+export async function getAllTicketsHandler(req, res) {
+  const tickets = await ticketService.getAllTickets();
+  res.status(200).json(tickets);
+}
+
 export async function createTicketHandler(req, res) {
   const { eventId } = req.params;
   const { tickets } = req.body;
