@@ -18,6 +18,6 @@
 ## How to Modularize OpenAPI Files
 1. Open terminal and install redocly: **npm install -D @redocly/cli**
 2. Then split into different parts: **npx @redocly/cli split docs/openapi.yaml --outDir docs/**
-3. Next: **npx @redocly/cli bundle docs/openapi.yaml -O public/bundled.yaml**
+3. Next: **npx @redocly/cli bundle docs/openapi.yaml -o public/bundled.yaml**
 4. Go back into server.js and change './docs/openapi.yaml' into './public/bundled.yaml'
 5. Save and restart server
