@@ -8,7 +8,7 @@ export async function getAllTickets() {
   return await prisma.ticket.findMany();
 }
 
-export async function getTicketById(ticketId) {
+export async function getTicket(ticketId) {
   return await prisma.ticket.findUnique({
     where: { id: ticketId },
   });

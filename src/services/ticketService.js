@@ -5,6 +5,16 @@ export async function getAllTickets() {
   return await ticketRepo.findAllTickets();
 }
 
+export async function getTicketById(id) {
+  const ticket = await ticketRepo.getTicket(id);
+  if (ticket) return ticket;
+  else {
+      const error = new Error(`Cannot find ticket with id ${id}`);
+      error.status = 404;
+      throw error;
+  }
+}
+
 export async function createTicketsForEvent(eventId, ticketsArray) {
   // if event exists, otherwise throw error
   const event = await eventRepo.getEventById(eventId);
@@ -33,10 +43,6 @@ export async function getTicketsForEvent(eventId, status) {
     return true;
   });
   return tickets;
-}
-
-export async function getTicketById(id) {
-  return await ticketRepo.getTicketById(id);
 }
 
 export async function updateTicket(id, data) {

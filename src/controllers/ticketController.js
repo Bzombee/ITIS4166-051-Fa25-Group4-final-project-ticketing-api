@@ -5,6 +5,12 @@ export async function getAllTicketsHandler(req, res) {
   res.status(200).json(tickets);
 }
 
+export async function getTicketByIdHandler(req, res) {
+  let id = parseInt(req.params.id);
+  const ticket = await ticketService.getTicketById(parseInt(id));
+  res.status(200).json(ticket);
+}
+
 export async function createTicketHandler(req, res) {
   const { eventId } = req.params;
   const { tickets } = req.body;
@@ -27,17 +33,6 @@ export async function getForEventHandler(req, res) {
     status,
   );
   res.status(200).json(tickets);
-}
-
-export async function getTicketByIdHandler(req, res) {
-  const { id } = req.params;
-  const ticket = await ticketService.getTicketById(parseInt(id));
-
-  if (!ticket) {
-    return res.status(404).json({ error: 'ticket not found' });
-  }
-
-  res.status(200).json(ticket);
 }
 
 export async function updateTicketHandler(req, res) {

@@ -10,7 +10,7 @@ import { getAllTicketsHandler, createTicketHandler, getForEventHandler, getTicke
 const router = express.Router();
 
 router.get('/', getAllTicketsHandler);
-//router.get('/:id', getTicketByIdHandler);
+router.get('/:id', getTicketByIdHandler);
 //router.get('/me', authenticate) //implement tickets for logged in user
 //router.get('/:eventId/tickets', getForEventHandler);
 //router.post('/:eventId/tickets', authenticate, authroizeRoles('ADMIN', 'ORGANIZER'), validateTicket, createTicketHandler);
