@@ -1,0 +1,12 @@
+type: object
+properties:
+  name:
+    type: string
+  email:
+    type: string
+  birthday:
+    type: string
+    format: date
+  password:
+    type: string
+    format: password

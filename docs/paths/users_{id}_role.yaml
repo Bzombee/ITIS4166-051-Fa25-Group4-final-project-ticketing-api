@@ -1,0 +1,30 @@
+patch:
+  summary: Update a user's role
+  description: Change the role of a user (ADMIN only)
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/UserRoleUpdate.yaml
+  responses:
+    '200':
+      description: User role updated
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/User.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '403':
+      $ref: ../components/responses/Forbidden.yaml

@@ -1,0 +1,22 @@
+openapi: 3.1.0
+info:
+  title: Ticketing System API
+  version: 1.0.0
+  description: API for managing users in the ticketing system.
+servers:
+  - url: http://localhost:3000/api
+security:
+  - bearerAuth: []
+paths:
+  /users:
+    $ref: paths/users.yaml
+  /users/me:
+    $ref: paths/users_me.yaml
+  /users/{id}/role:
+    $ref: paths/users_{id}_role.yaml
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
