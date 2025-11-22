@@ -6,54 +6,43 @@ export async function createEventHandler(req, res, next) {
       title,
       date,
       location,
-      description,
-      eventType,
+      description = '',
+      eventType = 'OTHER',
       ticketsAvailable,
+      organizerId: providedOrganizerId,
     } = req.body;
 
-    // Validate required fields
-    if (!title || !location || ticketsAvailable === undefined) {
-      const error = new Error('Missing required fields: title, location, and ticketsAvailable are required');
-      error.status = 400;
-      throw error;
-    }
+    // Organizer logic (admins may override)
+    const organizerId =
+      req.user.role === 'ADMIN' && providedOrganizerId
+        ? parseInt(providedOrganizerId)
+        : req.user.id;
 
-    // Use authenticated user's ID as the organizer
-    // Only admins can create events for other organizers
-    let organizerId = req.user.id;
-    
-    if (req.body.organizerId && req.user.role === 'ADMIN') {
-      organizerId = parseInt(req.body.organizerId);
-    }
-
-    // Parse and validate date
-    let eventDate = new Date();
-    if (date) {
-      eventDate = new Date(date);
-      if (isNaN(eventDate.getTime())) {
-        const error = new Error('Invalid date format. Please use ISO 8601 format (e.g., 2025-12-01 or 2025-12-01T18:00:00Z)');
-        error.status = 400;
-        throw error;
-      }
-    }
+    // Convert date string → Date object (validation occurs in middleware)
+    const eventDate = new Date(date);
 
     const event = await eventService.createEvent({
       title,
       date: eventDate,
       location,
-      description: description || '',
-      eventType: eventType || 'OTHER',
+      description,
+      eventType,
       ticketsAvailable: parseInt(ticketsAvailable),
       organizerId,
     });
 
-    res.status(201).json({
-      message: `event created with id of ${event.id}`,
+    return res.status(201).json({
+      message: `Event created with id ${event.id}`,
       eventId: event.id,
     });
   } catch (error) {
-    next(error);
+    if (error.code === 'P2002') {
+    return res.status(400).json({
+      error: "An event with this title already exists."
+    });
   }
+  next(error);
+}
 }
 
 export async function getAllEventHandler(req, res, next) {
@@ -93,33 +82,12 @@ export async function updateEventHandler(req, res, next) {
     const { id } = req.params;
     const updateData = {};
     
-    // Validate that at least one field is being updated
-    const allowedFields = ['title', 'location', 'description', 'eventType', 'ticketsAvailable', 'date'];
-    const hasUpdates = allowedFields.some(field => req.body[field] !== undefined);
-    
-    if (!hasUpdates) {
-      const error = new Error('At least one field must be provided for update');
-      error.status = 400;
-      throw error;
-    }
-
     // Build update data object
     ['title', 'location', 'description', 'eventType', 'ticketsAvailable'].forEach((field) => {
       if (req.body[field] !== undefined) {
         updateData[field] = req.body[field];
       }
     });
-
-    // Parse and validate date if provided
-    if (req.body.date !== undefined) {
-      const eventDate = new Date(req.body.date);
-      if (isNaN(eventDate.getTime())) {
-        const error = new Error('Invalid date format. Please use ISO 8601 format (e.g., 2025-12-01 or 2025-12-01T18:00:00Z)');
-        error.status = 400;
-        throw error;
-      }
-      updateData.date = eventDate;
-    }
 
     const event = await eventService.updateEvent(parseInt(id), updateData);
 
