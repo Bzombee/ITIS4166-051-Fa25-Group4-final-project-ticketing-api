@@ -1,0 +1,8 @@
+type: object
+properties:
+  price:
+    type: float
+    example: 30.50
+  seatNumber:
+    type: string
+    example: A4

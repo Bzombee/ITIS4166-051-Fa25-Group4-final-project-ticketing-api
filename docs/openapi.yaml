@@ -29,6 +29,12 @@ paths:
     $ref: paths/users_me.yaml
   /users/{id}/role:
     $ref: paths/users_{id}_role.yaml
+  /tickets:
+    $ref: paths/tickets.yaml
+  /tickets/{id}:
+    $ref: paths/tickets_{id}.yaml
+  /tickets/{eventId}/tickets:
+    $ref: paths/tickets_{eventId}_tickets.yaml
   /orders:
     $ref: paths/orders.yaml
   /orders/me:
