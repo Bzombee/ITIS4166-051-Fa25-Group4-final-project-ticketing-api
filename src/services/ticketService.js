@@ -50,7 +50,13 @@ export async function updateTicket(id, data) {
 }
 
 export async function deleteTicket(id) {
-  return await ticketRepo.deleteTicket(id);
+  const ticketToDelete = await getTicket(id);
+  if(ticketToDelete.ticketStatus === "AVAILABLE") return await ticketRepo.deleteTicket(id);
+  else {
+    const error = new Error(`Cannot delete ticket with id ${id} because it is sold`);
+    error.status = 409;
+    throw error;
+  }
 }
 
 export default {
