@@ -1,12 +1,13 @@
 import * as ticketRepo from '../repositories/ticketRepo.js';
+import { findAllTickets, getTicket, getAllTicketsByEvent } from '../repositories/ticketRepo.js';
 import * as eventRepo from '../repositories/eventRepo.js';
 
 export async function getAllTickets() {
-  return await ticketRepo.findAllTickets();
+  return await findAllTickets();
 }
 
 export async function getTicketById(id) {
-  const ticket = await ticketRepo.getTicket(id);
+  const ticket = await getTicket(id);
   if (ticket) return ticket;
   else {
     const error = new Error(`Cannot find ticket with id ${id}`);
@@ -23,7 +24,7 @@ export async function getTicketsForEvent(eventId) {
     throw error;
   }
 
-  let tickets = await ticketRepo.getAllTicketsByEvent(eventId);
+  let tickets = await getAllTicketsByEvent(eventId);
   return tickets;
 }
 
