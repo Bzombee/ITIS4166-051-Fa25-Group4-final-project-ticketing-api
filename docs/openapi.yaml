@@ -19,6 +19,10 @@ tags:
   - name: Orders
     description: Tickets purchased by customers
 paths:
+  /auth/register:
+    $ref: paths/auth_register.yaml
+  /auth/login:
+    $ref: paths/auth_login.yaml
   /users:
     $ref: paths/users.yaml
   /users/me:

@@ -1,0 +1,5 @@
+type: object
+properties:
+  accessToken:
+    type: string
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwicm9sZSI6IkNVU1RPTUVSIiwiaWF0IjoxNzYzOTMxNjg0LCJleHAiOjE3NjM5MzI1ODR9.6dByhzoOjOB6hZpGcqbMwVqHxAKH7toXhlZlsXTl1WA"
