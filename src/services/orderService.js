@@ -43,14 +43,14 @@ export async function getOrdersForUser(userId) {
   return await getOrders(userId);
 }
 
-export async function cancelOrder(id, updates) {
-  const cancelledOrder = await cancelOrderTransaction(id, updates);
-      if (cancelledOrder) return cancelledOrder;
-    else {
-        const error = new Error(`Cannot find order with id ${id}`);
-        error.status = 404;
-        throw error;
-    }
+export async function cancelOrder(id) {
+  const cancelledOrder = await cancelOrderTransaction(id);
+  if (cancelledOrder) return cancelledOrder;
+  else {
+      const error = new Error(`Cannot find order with id ${id}`);
+      error.status = 404;
+      throw error;
+  }
 }
 
 export async function deleteOrder(id) {

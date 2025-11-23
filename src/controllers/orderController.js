@@ -34,9 +34,7 @@ export async function cancelOrderHandler(req, res, next) {
   try {
     const orderId = parseInt(req.params.id);
 
-    let updates = req.body;
-
-    const orderToCancel = await cancelOrder(orderId, updates);
+    const orderToCancel = await cancelOrder(orderId);
     res.status(200).json(orderToCancel);
   } catch (error) {
     next(error);
