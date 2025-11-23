@@ -20,9 +20,18 @@ paths:
     $ref: paths/events_{id}.yaml
   /events/organizer/{id}:
     $ref: paths/events_organizer_{id}.yaml
+  /orders:
+    $ref: paths/orders.yaml
+  /orders/{id}:
+    $ref: paths/orders_{id}.yaml
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    User:
+      $ref: components/schemas/User.yaml
+    Order:
+      $ref: components/schemas/Order.yaml

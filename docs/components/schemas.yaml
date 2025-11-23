@@ -6,18 +6,18 @@ User:
       example: 1
     name:
       type: string
-      example: "John Doe"
+      example: 'John Doe'
     email:
       type: string
-      example: "john@example.com"
+      example: 'john@example.com'
     birthday:
       type: string
       format: date
-      example: "1990-01-01"
+      example: '1990-01-01'
     role:
       type: string
       enum: [CUSTOMER, ADMIN, ORGANIZER]
-      example: "CUSTOMER"
+      example: 'CUSTOMER'
 
 UserUpdate:
   type: object
