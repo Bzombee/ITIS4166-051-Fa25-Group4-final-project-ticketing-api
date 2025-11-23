@@ -1,1 +1,5 @@
 description: Unauthorized access (missing or invalid token)
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/UnauthroizedError.yaml

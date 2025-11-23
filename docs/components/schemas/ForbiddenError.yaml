@@ -1,0 +1,5 @@
+type: object
+properties:
+  error:
+    type: string
+    example: You have insufficient permissions

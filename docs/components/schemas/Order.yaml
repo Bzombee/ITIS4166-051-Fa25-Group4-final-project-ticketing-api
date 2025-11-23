@@ -13,7 +13,6 @@ properties:
   orderStatus:
     type: string
     enum:
-      - PENDING
       - COMPLETED
       - CANCELLED
     example: COMPLETED

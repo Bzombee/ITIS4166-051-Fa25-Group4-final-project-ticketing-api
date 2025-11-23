@@ -1,0 +1,5 @@
+description: Conflicting requests
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/ConflictError.yaml
