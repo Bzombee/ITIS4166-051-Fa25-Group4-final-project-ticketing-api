@@ -71,19 +71,36 @@ export async function remove(id) {
   try {
     return await prisma.$transaction(async (tx) => {
 
-      // delete child rows first
+      // 1. Find all tickets associated with this order
+      const orderTickets = await tx.orderTicket.findMany({
+        where: { orderId: id },
+        select: { ticketId: true }
+      });
+
+      // If there are tickets, free them (set status back to AVAILABLE)
+      if (orderTickets.length > 0) {
+        const ticketIds = orderTickets.map(ot => ot.ticketId);
+
+        await tx.ticket.updateMany({
+          where: { id: { in: ticketIds } },
+          data: { ticketStatus: 'AVAILABLE' }
+        });
+      }
+
+      // 2. Delete child rows (orderTickets)
       await tx.orderTicket.deleteMany({
         where: { orderId: id }
       });
 
-      // delete order afterwards
+      // 3. Delete the order
       return await tx.order.delete({
-        where: { id: id }
+        where: { id }
       });
 
-    });
+    }); // end transaction
+
   } catch (error) {
-    if (error.code === 'P2025') return null;
+    if (error.code === 'P2025') return null; // order not found
     throw error;
   }
 }
