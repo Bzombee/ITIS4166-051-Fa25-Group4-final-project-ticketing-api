@@ -55,11 +55,8 @@ Order:
       example: 99.99
     orderStatus:
       type: string
-      enum:
-        - PENDING
-        - COMPLETED
-        - CANCELLED
-      example: 'COMPLETED'
+      enum: [PENDING, COMPLETED, CANCELLED]
+      example: COMPLETED
     orderTickets:
       type: array
       items:
@@ -75,7 +72,3 @@ Order:
       type: string
       format: date-time
       example: '2025-02-15T10:30:00Z'
-    updatedAt:
-      type: string
-      format: date-time
-      example: '2025-02-16T12:00:00Z'

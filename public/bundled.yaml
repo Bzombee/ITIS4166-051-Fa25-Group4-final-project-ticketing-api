@@ -324,10 +324,6 @@ components:
               quantity:
                 type: integer
                 example: 2
-        orderDate:
-          type: string
-          format: date-time
-          example: '2025-02-15T14:30:00Z'
         createdAt:
           type: string
           format: date-time
