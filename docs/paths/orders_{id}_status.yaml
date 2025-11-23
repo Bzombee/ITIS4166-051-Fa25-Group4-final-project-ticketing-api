@@ -1,8 +1,8 @@
-delete:
-  summary: Delete order
+patch:
+  summary: Cancel an order
   tags:
     - Orders
-  description: Delete an order by its ID (ADMIN only)
+  description: Cancels the order and makes tickets available again
   security:
     - bearerAuth: []
   parameters:
@@ -11,10 +11,15 @@ delete:
       required: true
       schema:
         type: integer
-      example: 1
   responses:
-    '204':
-      description: Order deleted successfully
+    '200':
+      description: Order status updated
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Order.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
     '403':
