@@ -15,7 +15,7 @@ export async function authorizeOrderOwnership(req, res, next) {
 
 export async function authorizeEventOwnership(req, res, next) {
   try {
-    const eventId = parseInt(req.params.id);
+    const eventId = parseInt(req.params.id || req.params.eventId);
     const event = await getEventById(eventId);
 
     // Admins can modify any event

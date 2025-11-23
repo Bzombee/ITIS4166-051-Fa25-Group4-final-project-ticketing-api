@@ -1,1 +1,5 @@
-description: Validation error / bad request
+description: Invalid input
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/ValidationError.yaml

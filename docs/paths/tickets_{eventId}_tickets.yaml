@@ -1,0 +1,62 @@
+get:
+  summary: get a ticket by event id
+  tags:
+    - Tickets
+  description: Finds a ticket by event id
+  parameters:
+    - name: eventId
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 1
+  responses:
+    '200':
+      description: List a ticket by eventId
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/Ticket.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+post:
+  summary: Create a new ticket
+  tags:
+    - Tickets
+  description: Creates a new ticket. Must be admin or organizer and belongs to your event.
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - price
+            - seatNumber
+          properties:
+            price:
+              type: float
+              example: 30.50
+            seatNumber:
+              type: string
+              example: A50
+  responses:
+    '201':
+      description: Order created successfully
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Order.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '409':
+      $ref: ../components/responses/Conflict.yaml
+

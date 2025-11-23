@@ -1,1 +1,5 @@
-description: Request Not Found
+description: Not Found
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/NotFoundError.yaml

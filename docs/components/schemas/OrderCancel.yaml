@@ -15,7 +15,7 @@ properties:
     enum:
       - COMPLETED
       - CANCELLED
-    example: COMPLETED
+    example: CANCELLED
   orderTickets:
     type: array
     items:

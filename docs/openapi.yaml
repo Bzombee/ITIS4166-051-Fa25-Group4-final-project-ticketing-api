@@ -7,31 +7,53 @@ servers:
   - url: http://localhost:3000/api
 security:
   - bearerAuth: []
+tags:
+  - name: Authentication
+    description: Sign-up and login users
+  - name: Users
+    description: User information
+  - name: Events
+    description: Information about events
+  - name: Tickets
+    description: Tickets associated with events
+  - name: Orders
+    description: Tickets purchased by customers
 paths:
+  /auth/register:
+    $ref: paths/auth_register.yaml
+  /auth/login:
+    $ref: paths/auth_login.yaml
   /users:
     $ref: paths/users.yaml
   /users/me:
     $ref: paths/users_me.yaml
   /users/{id}/role:
     $ref: paths/users_{id}_role.yaml
+  /tickets:
+    $ref: paths/tickets.yaml
+  /tickets/{id}:
+    $ref: paths/tickets_{id}.yaml
+  /tickets/{eventId}/tickets:
+    $ref: paths/tickets_{eventId}_tickets.yaml
+  /orders:
+    $ref: paths/orders.yaml
+  /orders/me:
+    $ref: paths/orders_me.yaml
+  /order/me/{id}:
+    $ref: paths/orders_me_{id}.yaml
+  /order/{id}/status:
+    $ref: paths/orders_{id}_status.yaml
+  /orders/{id}:
+    $ref: paths/orders_{id}.yaml
   /events:
     $ref: paths/events.yaml
   /events/{id}:
     $ref: paths/events_{id}.yaml
   /events/organizer/{id}:
     $ref: paths/events_organizer_{id}.yaml
-  /orders:
-    $ref: paths/orders.yaml
-  /orders/{id}:
-    $ref: paths/orders_{id}.yaml
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  schemas:
-    User:
-      $ref: components/schemas/User.yaml
-    Order:
-      $ref: components/schemas/Order.yaml

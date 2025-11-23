@@ -1,5 +1,7 @@
 get:
   summary: Get all events
+  tags:
+    - Events
   description: Returns a list of all events (public access)
   responses:
     '200':
@@ -10,9 +12,10 @@ get:
             type: array
             items:
               $ref: ../components/schemas/Event.yaml
-
 post:
   summary: Create a new event
+  tags:
+    - Events
   description: Create a new event (ADMIN or ORGANIZER only)
   security:
     - bearerAuth: []

@@ -1,8 +1,8 @@
-delete:
-  summary: Delete order
+get:
+  summary: Get order
   tags:
     - Orders
-  description: Delete an order by its ID (ADMIN only)
+  description: Returns the specific order by the authenticated person
   security:
     - bearerAuth: []
   parameters:
@@ -11,15 +11,16 @@ delete:
       required: true
       schema:
         type: integer
-      example: 1
   responses:
-    '204':
-      description: Order deleted successfully
+    '200':
+      description: Respective order
+      content:
+        application/json:
+          schema:
+              $ref: ../components/schemas/Order.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
     '403':
       $ref: ../components/responses/Forbidden.yaml
     '404':
       $ref: ../components/responses/NotFound.yaml
-    '409':
-      $ref: ../components/responses/Conflict.yaml

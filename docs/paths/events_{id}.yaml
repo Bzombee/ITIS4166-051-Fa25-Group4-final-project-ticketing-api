@@ -1,5 +1,7 @@
 get:
   summary: Get event by ID
+  tags:
+    - Events
   description: Returns a single event by its ID (public access)
   parameters:
     - name: id
@@ -25,9 +27,10 @@ get:
               error:
                 type: string
                 example: "event not found"
-
 put:
   summary: Update an event
+  tags:
+    - Events
   description: Update an existing event (ADMIN or event ORGANIZER only)
   security:
     - bearerAuth: []
@@ -67,9 +70,10 @@ put:
               error:
                 type: string
                 example: "event not found"
-
 delete:
   summary: Delete an event
+  tags:
+    - Events
   description: Delete an event (ADMIN or event ORGANIZER only)
   security:
     - bearerAuth: []

@@ -1,10 +1,16 @@
 import prisma from '../config/db.js';
 
-export async function getAllTickets() {
+export async function findAllTickets() {
   return await prisma.ticket.findMany();
 }
 
-export async function getTicketById(ticketId) {
+export async function getAllTicketsByEvent(eventId) {
+  return await prisma.ticket.findMany({
+    where: {eventId},
+  });
+}
+
+export async function getTicket(ticketId) {
   return await prisma.ticket.findUnique({
     where: { id: ticketId },
   });
@@ -28,3 +34,16 @@ export async function deleteTicket(ticketId) {
     where: { id: ticketId },
   });
 }
+
+export async function seatExistsInEvent(eventId, seatNumber) {
+  const result = await prisma.ticket.findFirst({
+    where: {
+      eventId,
+      seatNumber,
+    },
+    select: { id: true },
+  });
+
+  return result !== null;
+}
+

@@ -1,65 +1,48 @@
-import * as ticketService from '../services/ticketService.js';
+import { getAllTickets, getTicketsForEvent, getTicketById, createTicketsForEvent, updateTicket, deleteTicket } from '../services/ticketService.js';
 
-export async function createTicketHandler(req, res) {
-  const { eventId } = req.params;
-  const { tickets } = req.body;
-  const created = await ticketService.createTicketsForEvent(
-    parseInt(eventId),
-    tickets,
-  );
-
-  res.status(201).json({
-    message: `created ${created.length} tickets`,
-    count: created.length,
-  });
-}
-
-export async function getForEventHandler(req, res) {
-  const { eventId } = req.params;
-  const { status } = req.query;
-  const tickets = await ticketService.getTicketsForEvent(
-    parseInt(eventId),
-    status,
-  );
+export async function getAllTicketsHandler(req, res) {
+  const tickets = await getAllTickets();
   res.status(200).json(tickets);
 }
 
 export async function getTicketByIdHandler(req, res) {
-  const { id } = req.params;
-  const ticket = await ticketService.getTicketById(parseInt(id));
-
-  if (!ticket) {
-    return res.status(404).json({ error: 'ticket not found' });
-  }
-
+  let id = parseInt(req.params.id);
+  const ticket = await getTicketById(parseInt(id));
   res.status(200).json(ticket);
+}
+
+export async function getForEventHandler(req, res) {
+  const { eventId } = req.params;
+  const tickets = await getTicketsForEvent(parseInt(eventId));
+  res.status(200).json(tickets);
+}
+
+export async function createTicketHandler(req, res) {
+  const eventId = parseInt(req.params.eventId);
+  const data = {    
+    price: parseFloat(req.body.price),
+    seatNumber: req.body.seatNumber,
+    eventId: eventId,
+   };
+  const newTicket = await createTicketsForEvent(data);
+
+  res.status(201).json(newTicket);
 }
 
 export async function updateTicketHandler(req, res) {
   const { id } = req.params;
-  const data = {};
+  const data = {
+    price: parseFloat(req.body.price),
+    seatNumber: req.body.seatNumber
+  };
 
-  if (req.body.price !== undefined) {
-    data.price = req.body.price;
-  }
+  const ticket = await updateTicket(parseInt(id), data);
 
-  if (req.body.seatNumber !== undefined) {
-    data.seatNumber = req.body.seatNumber;
-  }
-
-  const ticket = await ticketService.updateTicket(parseInt(id), data);
-
-  if (!ticket) {
-    return res.status(404).json({ error: 'Ticket not found' });
-  }
-
-  res
-    .status(200)
-    .json({ message: 'ticket has been updated', ticketId: ticket.id });
+  res.status(200).json(ticket);
 }
 
 export async function deleteTicketHandler(req, res) {
   const { id } = req.params;
-  await ticketService.deleteTicket(parseInt(id));
+  await deleteTicket(parseInt(id));
   res.status(200).json({ message: 'ticket has been deleted' });
 }

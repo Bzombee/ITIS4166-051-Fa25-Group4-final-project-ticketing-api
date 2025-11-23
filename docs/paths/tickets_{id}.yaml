@@ -1,0 +1,83 @@
+get:
+  summary: get a ticket by id
+  tags:
+    - Tickets
+  description: Finds a ticket by id
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 1
+  responses:
+    '200':
+      description: List a ticket
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/Ticket.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+put:
+  summary: Updates a ticket
+  tags:
+    - Tickets
+  description: Must be admin or organizer. Ticket cannot be sold.
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 1
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/TicketUpdate.yaml
+  responses:
+    '200':
+      description: Updated user info
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Ticket.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '403':
+      $ref: ../components/responses/Forbidden.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '409':
+      $ref: ../components/responses/Conflict.yaml
+delete:
+  summary: Delete ticket
+  tags:
+    - Tickets
+  description: Delete a ticket (ADMIN or ORGANIZER). Must be available.
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 1
+  responses:
+    '204':
+      description: Ticket deleted successfully
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '403':
+      $ref: ../components/responses/Forbidden.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '409':
+      $ref: ../components/responses/Conflict.yaml

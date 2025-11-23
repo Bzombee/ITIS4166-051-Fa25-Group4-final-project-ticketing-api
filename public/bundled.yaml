@@ -2,15 +2,102 @@ openapi: 3.1.0
 info:
   title: Ticketing System API
   version: 1.0.0
-  description: API for managing users in the ticketing system.
+  description: API for managing users and events in the ticketing system.
 servers:
-  - url: 'http://localhost:3000/api'
+  - url: http://localhost:3000/api
 security:
   - bearerAuth: []
+tags:
+  - name: Authentication
+    description: Sign-up and login users
+  - name: Users
+    description: User information
+  - name: Events
+    description: Information about events
+  - name: Tickets
+    description: Tickets associated with events
+  - name: Orders
+    description: Tickets purchased by customers
 paths:
+  /auth/register:
+    post:
+      summary: Create a new user
+      tags:
+        - Authentication
+      description: Creates a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - birthday
+                - password
+              properties:
+                name:
+                  type: string
+                  example: Johne Doe
+                email:
+                  type: string
+                  example: john@example.com
+                password:
+                  type: string
+                  example: '12345678'
+                birthday:
+                  type: string
+                  example: '1990-01-01'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSignup'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /auth/login:
+    post:
+      summary: login as a user
+      tags:
+        - Authentication
+      description: User sign-in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: john@example.com
+                password:
+                  type: string
+                  example: '12345678'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthLogin'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
   /users:
     get:
       summary: Get all users
+      tags:
+        - Users
       description: Returns a list of all users (ADMIN only)
       security:
         - bearerAuth: []
@@ -24,12 +111,14 @@ paths:
                 items:
                   $ref: '#/components/schemas/User'
         '401':
-          description: Unauthorized access (missing or invalid token)
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Forbidden (insufficient permissions)
+          $ref: '#/components/responses/Forbidden'
   /users/me:
     get:
       summary: Get current logged-in user
+      tags:
+        - Users
       description: Returns information about the authenticated user
       security:
         - bearerAuth: []
@@ -41,9 +130,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '401':
-          $ref: '#/paths/~1users/get/responses/401'
+          $ref: '#/components/responses/Unauthorized'
     put:
       summary: Update current user
+      tags:
+        - Users
       description: Update authenticated user's information
       security:
         - bearerAuth: []
@@ -52,18 +143,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-                birthday:
-                  type: string
-                  format: date
-                password:
-                  type: string
-                  format: password
+              $ref: '#/components/schemas/UserUpdate'
       responses:
         '200':
           description: Updated user info
@@ -72,11 +152,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          $ref: '#/paths/~1orders/post/responses/400'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/paths/~1users/get/responses/401'
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
     delete:
       summary: Delete current user
+      tags:
+        - Users
       description: Deletes the authenticated user
       security:
         - bearerAuth: []
@@ -84,10 +168,14 @@ paths:
         '204':
           description: User deleted successfully
         '401':
-          $ref: '#/paths/~1users/get/responses/401'
-  '/users/{id}/role':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /users/{id}/role:
     patch:
       summary: Update a user's role
+      tags:
+        - Users
       description: Change the role of a user (ADMIN only)
       security:
         - bearerAuth: []
@@ -102,14 +190,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                role:
-                  type: string
-                  enum:
-                    - CUSTOMER
-                    - ADMIN
-                    - ORGANIZER
+              $ref: '#/components/schemas/UserRoleUpdate'
       responses:
         '200':
           description: User role updated
@@ -118,32 +199,177 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          $ref: '#/paths/~1orders/post/responses/400'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/paths/~1users/get/responses/401'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/paths/~1users/get/responses/403'
-  /orders:
+          $ref: '#/components/responses/Forbidden'
+  /tickets:
     get:
-      summary: Get all orders
-      description: Returns a list of all orders (ADMIN only)
-      security:
-        - bearerAuth: []
+      summary: Get all tickets
+      tags:
+        - Tickets
+      description: Returns a list of tickets
       responses:
         '200':
-          description: List of orders
+          description: List of all tickets
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Order'
+                  $ref: '#/components/schemas/Ticket'
+  /tickets/{id}:
+    get:
+      summary: get a ticket by id
+      tags:
+        - Tickets
+      description: Finds a ticket by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: List a ticket
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Updates a ticket
+      tags:
+        - Tickets
+      description: Must be admin or organizer. Ticket cannot be sold.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketUpdate'
+      responses:
+        '200':
+          description: Updated user info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
         '401':
-          $ref: '#/paths/~1users/get/responses/401'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/paths/~1users/get/responses/403'
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      summary: Delete ticket
+      tags:
+        - Tickets
+      description: Delete a ticket (ADMIN or ORGANIZER). Must be available.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: Ticket deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /tickets/{eventId}/tickets:
+    get:
+      summary: get a ticket by event id
+      tags:
+        - Tickets
+      description: Finds a ticket by event id
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: List a ticket by eventId
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      summary: Create a new ticket
+      tags:
+        - Tickets
+      description: Creates a new ticket. Must be admin or organizer and belongs to your event.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - price
+                - seatNumber
+              properties:
+                price:
+                  type: float
+                  example: 30.5
+                seatNumber:
+                  type: string
+                  example: A50
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /orders:
     post:
       summary: Create new order
+      tags:
+        - Orders
       description: Creates a new order (authenticated only)
       security:
         - bearerAuth: []
@@ -172,13 +398,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/Order'
         '400':
-          description: Validation error / bad request
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/paths/~1users/get/responses/401'
-  '/orders/{id}':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /orders/me:
     get:
-      summary: Get order by ID
-      description: Returns a single order by its ID (ADMIN only)
+      summary: Get all orders
+      tags:
+        - Orders
+      description: Returns all orders by the authenticated person
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /order/me/{id}:
+    get:
+      summary: Get order
+      tags:
+        - Orders
+      description: Returns the specific order by the authenticated person
       security:
         - bearerAuth: []
       parameters:
@@ -187,23 +440,25 @@ paths:
           required: true
           schema:
             type: integer
-          example: 1
       responses:
         '200':
-          description: Order details
+          description: Respective order
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
         '401':
-          $ref: '#/paths/~1users/get/responses/401'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/paths/~1users/get/responses/403'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Request Not Found
-    put:
-      summary: Update order
-      description: Update an existing order (ADMIN only)
+          $ref: '#/components/responses/NotFound'
+  /order/{id}/status:
+    patch:
+      summary: Cancel an order
+      tags:
+        - Orders
+      description: Cancels the order and makes tickets available again
       security:
         - bearerAuth: []
       parameters:
@@ -212,38 +467,28 @@ paths:
           required: true
           schema:
             type: integer
-          example: 1
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                orderStatus:
-                  type: string
-                  enum:
-                    - PENDING
-                    - COMPLETED
-                    - CANCELLED
-                  example: CANCELLED
       responses:
         '200':
-          description: Order updated successfully
+          description: Order status updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/OrderCancel'
         '400':
-          $ref: '#/paths/~1orders/post/responses/400'
+          $ref: '#/components/responses/BadRequest'
         '401':
-          $ref: '#/paths/~1users/get/responses/401'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/paths/~1users/get/responses/403'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: '#/paths/~1orders~1%7Bid%7D/get/responses/404'
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /orders/{id}:
     delete:
       summary: Delete order
+      tags:
+        - Orders
       description: Delete an order by its ID (ADMIN only)
       security:
         - bearerAuth: []
@@ -258,11 +503,181 @@ paths:
         '204':
           description: Order deleted successfully
         '401':
-          $ref: '#/paths/~1users/get/responses/401'
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          $ref: '#/paths/~1users/get/responses/403'
+          $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: '#/paths/~1orders~1%7Bid%7D/get/responses/404'
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /events:
+    get:
+      summary: Get all events
+      tags:
+        - Events
+      description: Returns a list of all events (public access)
+      responses:
+        '200':
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+    post:
+      summary: Create a new event
+      tags:
+        - Events
+      description: Create a new event (ADMIN or ORGANIZER only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventCreate'
+      responses:
+        '201':
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Event created with id 1
+                  eventId:
+                    type: integer
+                    example: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /events/{id}:
+    get:
+      summary: Get event by ID
+      tags:
+        - Events
+      description: Returns a single event by its ID (public access)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Event ID
+      responses:
+        '200':
+          description: Event details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: event not found
+    put:
+      summary: Update an event
+      tags:
+        - Events
+      description: Update an existing event (ADMIN or event ORGANIZER only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Event ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdate'
+      responses:
+        '200':
+          description: Event updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: event not found
+    delete:
+      summary: Delete an event
+      tags:
+        - Events
+      description: Delete an event (ADMIN or event ORGANIZER only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Event ID
+      responses:
+        '204':
+          description: Event deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Event not found
+  /events/organizer/{id}:
+    get:
+      summary: Get events by organizer
+      tags:
+        - Events
+      description: Returns all events created by a specific organizer (public access)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Organizer (User) ID
+      responses:
+        '200':
+          description: List of events by organizer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   securitySchemes:
     bearerAuth:
@@ -270,6 +685,34 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    AuthSignup:
+      type: object
+      properties:
+        message:
+          type: string
+          example: New user created with an id of 1
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Validation failed
+        details:
+          type: array
+          items:
+            type: string
+    ConflictError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Already exists
+    AuthLogin:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwicm9sZSI6IkNVU1RPTUVSIiwiaWF0IjoxNzYzOTMxNjg0LCJleHAiOjE3NjM5MzI1ODR9.6dByhzoOjOB6hZpGcqbMwVqHxAKH7toXhlZlsXTl1WA
     User:
       type: object
       properties:
@@ -293,6 +736,77 @@ components:
             - ADMIN
             - ORGANIZER
           example: CUSTOMER
+    UnauthorizedError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: You are not authenticated
+    ForbiddenError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: You have insufficient permissions
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        birthday:
+          type: string
+          format: date
+        password:
+          type: string
+          format: password
+    NotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Id not found
+    UserRoleUpdate:
+      type: object
+      properties:
+        role:
+          type: string
+          enum:
+            - CUSTOMER
+            - ADMIN
+            - ORGANIZER
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        price:
+          type: float
+          example: 30.5
+        seatNumber:
+          type: string
+          example: A1
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-02-15T10:30:00Z'
+        ticketStatus:
+          type: string
+          enum:
+            - AVAILABLE
+            - SOLD
+          example: AVAILABLE
+    TicketUpdate:
+      type: object
+      properties:
+        price:
+          type: float
+          example: 30.5
+        seatNumber:
+          type: string
+          example: A4
     Order:
       type: object
       properties:
@@ -309,7 +823,6 @@ components:
         orderStatus:
           type: string
           enum:
-            - PENDING
             - COMPLETED
             - CANCELLED
           example: COMPLETED
@@ -328,3 +841,167 @@ components:
           type: string
           format: date-time
           example: '2025-02-15T10:30:00Z'
+    OrderCancel:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        userId:
+          type: integer
+          example: 2
+        total:
+          type: number
+          format: float
+          example: 99.99
+        orderStatus:
+          type: string
+          enum:
+            - COMPLETED
+            - CANCELLED
+          example: CANCELLED
+        orderTickets:
+          type: array
+          items:
+            type: object
+            properties:
+              ticketId:
+                type: integer
+                example: 10
+              quantity:
+                type: integer
+                example: 2
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-02-15T10:30:00Z'
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Summer Music Festival
+        date:
+          type: string
+          format: date-time
+          example: '2025-07-15T18:00:00Z'
+        location:
+          type: string
+          example: Central Park, New York
+        description:
+          type: string
+          example: Annual summer music festival featuring top artists
+        eventType:
+          type: string
+          enum:
+            - SPORTS
+            - MUSIC
+            - MOVIES
+            - OTHER
+          example: MUSIC
+        ticketsAvailable:
+          type: integer
+          example: 500
+        organizerId:
+          type: integer
+          example: 2
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-01-01T12:00:00Z'
+    EventCreate:
+      type: object
+      required:
+        - title
+        - date
+        - location
+        - ticketsAvailable
+      properties:
+        title:
+          type: string
+          example: Summer Music Festival
+        date:
+          type: string
+          format: date-time
+          example: '2025-07-15T18:00:00Z'
+        location:
+          type: string
+          example: Central Park, New York
+        description:
+          type: string
+          example: Annual summer music festival featuring top artists
+        eventType:
+          type: string
+          enum:
+            - SPORTS
+            - MUSIC
+            - MOVIES
+            - OTHER
+          default: OTHER
+          example: MUSIC
+        ticketsAvailable:
+          type: integer
+          minimum: 1
+          example: 500
+        organizerId:
+          type: integer
+          description: Only ADMINs can specify this. Otherwise, defaults to authenticated user.
+          example: 2
+    EventUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Summer Music Festival 2025
+        location:
+          type: string
+          example: Central Park, New York
+        description:
+          type: string
+          example: Updated festival description
+        eventType:
+          type: string
+          enum:
+            - SPORTS
+            - MUSIC
+            - MOVIES
+            - OTHER
+          example: MUSIC
+        ticketsAvailable:
+          type: integer
+          minimum: 0
+          example: 450
+  responses:
+    BadRequest:
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+    Conflict:
+      description: Conflicting requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConflictError'
+    Unauthorized:
+      description: Unauthorized access (missing or invalid token)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
+    Forbidden:
+      description: Forbidden (insufficient permissions)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'

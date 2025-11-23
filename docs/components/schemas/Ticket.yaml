@@ -1,0 +1,21 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  price:
+    type: float
+    example: 30.50
+  seatNumber:
+    type: string
+    example: A1
+  createdAt:
+    type: string
+    format: date-time
+    example: '2025-02-15T10:30:00Z'
+  ticketStatus:
+    type: string
+    enum:
+      - AVAILABLE
+      - SOLD
+    example: AVAILABLE
