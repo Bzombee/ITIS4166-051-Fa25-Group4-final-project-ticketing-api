@@ -1,5 +1,7 @@
 get:
   summary: Get events by organizer
+  tags:
+    - Events
   description: Returns all events created by a specific organizer (public access)
   parameters:
     - name: id
@@ -17,3 +19,5 @@ get:
             type: array
             items:
               $ref: ../components/schemas/Event.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
