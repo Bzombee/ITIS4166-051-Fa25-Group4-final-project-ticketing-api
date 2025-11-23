@@ -17,7 +17,7 @@ app.use(cors());
 app.use(morgan('tiny'));
 app.use(express.json());
 
-const specs = YAML.load('../public/bundled.yaml');
+const specs = YAML.load('./public/bundled.yaml');
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 
 app.use('/api/auth', authRoutes);
