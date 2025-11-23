@@ -6,18 +6,18 @@ User:
       example: 1
     name:
       type: string
-      example: "John Doe"
+      example: 'John Doe'
     email:
       type: string
-      example: "john@example.com"
+      example: 'john@example.com'
     birthday:
       type: string
       format: date
-      example: "1990-01-01"
+      example: '1990-01-01'
     role:
       type: string
       enum: [CUSTOMER, ADMIN, ORGANIZER]
-      example: "CUSTOMER"
+      example: 'CUSTOMER'
 
 UserUpdate:
   type: object
@@ -39,3 +39,36 @@ UserRoleUpdate:
     role:
       type: string
       enum: [CUSTOMER, ADMIN, ORGANIZER]
+
+Order:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    userId:
+      type: integer
+      example: 2
+    total:
+      type: number
+      format: float
+      example: 99.99
+    orderStatus:
+      type: string
+      enum: [PENDING, COMPLETED, CANCELLED]
+      example: COMPLETED
+    orderTickets:
+      type: array
+      items:
+        type: object
+        properties:
+          ticketId:
+            type: integer
+            example: 10
+          quantity:
+            type: integer
+            example: 2
+    createdAt:
+      type: string
+      format: date-time
+      example: '2025-02-15T10:30:00Z'

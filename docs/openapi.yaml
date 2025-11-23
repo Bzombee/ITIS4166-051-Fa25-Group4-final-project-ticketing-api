@@ -14,9 +14,18 @@ paths:
     $ref: paths/users_me.yaml
   /users/{id}/role:
     $ref: paths/users_{id}_role.yaml
+  /orders:
+    $ref: paths/orders.yaml
+  /orders/{id}:
+    $ref: paths/orders_{id}.yaml
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    User:
+      $ref: components/schemas/User.yaml
+    Order:
+      $ref: components/schemas/Order.yaml

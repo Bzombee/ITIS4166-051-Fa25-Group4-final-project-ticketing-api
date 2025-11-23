@@ -1,0 +1,89 @@
+get:
+  summary: Get order by ID
+  description: Returns a single order by its ID (ADMIN only)
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 1
+  responses:
+    '200':
+      description: Order details
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Order.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '403':
+      $ref: ../components/responses/Forbidden.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+
+put:
+  summary: Update order
+  description: Update an existing order (ADMIN only)
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 1
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            orderStatus:
+              type: string
+              enum:
+                - PENDING
+                - COMPLETED
+                - CANCELLED
+              example: CANCELLED
+  responses:
+    '200':
+      description: Order updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Order.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '403':
+      $ref: ../components/responses/Forbidden.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+
+delete:
+  summary: Delete order
+  description: Delete an order by its ID (ADMIN only)
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 1
+  responses:
+    '204':
+      description: Order deleted successfully
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '403':
+      $ref: ../components/responses/Forbidden.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
