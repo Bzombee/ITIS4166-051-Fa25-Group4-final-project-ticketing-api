@@ -3,6 +3,12 @@ import cors from 'cors';
 import morgan from 'morgan';
 import swaggerUI from 'swagger-ui-express'
 import YAML from  'yamljs'
+import path from "path";
+import { fileURLToPath } from "url";
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -17,7 +23,8 @@ app.use(cors());
 app.use(morgan('tiny'));
 app.use(express.json());
 
-const specs = YAML.load('./public/bundled.yaml');
+const yamlPath = path.join(__dirname, "../public/bundled.yaml");
+const specs = YAML.load(yamlPath);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 
 app.use('/api/auth', authRoutes);
