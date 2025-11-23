@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: API for managing users in the ticketing system.
 servers:
-  - url: http://localhost:3000/api
+  - url: 'http://localhost:3000/api'
 security:
   - bearerAuth: []
 paths:
@@ -24,9 +24,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/User'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Unauthorized access (missing or invalid token)
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Forbidden (insufficient permissions)
   /users/me:
     get:
       summary: Get current logged-in user
@@ -41,7 +41,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/paths/~1users/get/responses/401'
     put:
       summary: Update current user
       description: Update authenticated user's information
@@ -52,7 +52,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdate'
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                birthday:
+                  type: string
+                  format: date
+                password:
+                  type: string
+                  format: password
       responses:
         '200':
           description: Updated user info
@@ -61,9 +72,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/paths/~1orders/post/responses/400'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/paths/~1users/get/responses/401'
     delete:
       summary: Delete current user
       description: Deletes the authenticated user
@@ -73,8 +84,8 @@ paths:
         '204':
           description: User deleted successfully
         '401':
-          $ref: '#/components/responses/Unauthorized'
-  /users/{id}/role:
+          $ref: '#/paths/~1users/get/responses/401'
+  '/users/{id}/role':
     patch:
       summary: Update a user's role
       description: Change the role of a user (ADMIN only)
@@ -91,7 +102,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRoleUpdate'
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum:
+                    - CUSTOMER
+                    - ADMIN
+                    - ORGANIZER
       responses:
         '200':
           description: User role updated
@@ -100,11 +118,151 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/paths/~1orders/post/responses/400'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/paths/~1users/get/responses/401'
         '403':
-          $ref: '#/components/responses/Forbidden'
+          $ref: '#/paths/~1users/get/responses/403'
+  /orders:
+    get:
+      summary: Get all orders
+      description: Returns a list of all orders (ADMIN only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/paths/~1users/get/responses/401'
+        '403':
+          $ref: '#/paths/~1users/get/responses/403'
+    post:
+      summary: Create new order
+      description: Creates a new order (authenticated only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ticketIds
+              properties:
+                ticketIds:
+                  type: array
+                  items:
+                    type: integer
+                  example:
+                    - 1
+                    - 2
+                    - 3
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Validation error / bad request
+        '401':
+          $ref: '#/paths/~1users/get/responses/401'
+  '/orders/{id}':
+    get:
+      summary: Get order by ID
+      description: Returns a single order by its ID (ADMIN only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/paths/~1users/get/responses/401'
+        '403':
+          $ref: '#/paths/~1users/get/responses/403'
+        '404':
+          description: Request Not Found
+    put:
+      summary: Update order
+      description: Update an existing order (ADMIN only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderStatus:
+                  type: string
+                  enum:
+                    - PENDING
+                    - COMPLETED
+                    - CANCELLED
+                  example: CANCELLED
+      responses:
+        '200':
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/paths/~1orders/post/responses/400'
+        '401':
+          $ref: '#/paths/~1users/get/responses/401'
+        '403':
+          $ref: '#/paths/~1users/get/responses/403'
+        '404':
+          $ref: '#/paths/~1orders~1%7Bid%7D/get/responses/404'
+    delete:
+      summary: Delete order
+      description: Delete an order by its ID (ADMIN only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: Order deleted successfully
+        '401':
+          $ref: '#/paths/~1users/get/responses/401'
+        '403':
+          $ref: '#/paths/~1users/get/responses/403'
+        '404':
+          $ref: '#/paths/~1orders~1%7Bid%7D/get/responses/404'
 components:
   securitySchemes:
     bearerAuth:
@@ -135,32 +293,42 @@ components:
             - ADMIN
             - ORGANIZER
           example: CUSTOMER
-    UserUpdate:
+    Order:
       type: object
       properties:
-        name:
-          type: string
-        email:
-          type: string
-        birthday:
-          type: string
-          format: date
-        password:
-          type: string
-          format: password
-    UserRoleUpdate:
-      type: object
-      properties:
-        role:
+        id:
+          type: integer
+          example: 1
+        userId:
+          type: integer
+          example: 2
+        total:
+          type: number
+          format: float
+          example: 99.99
+        orderStatus:
           type: string
           enum:
-            - CUSTOMER
-            - ADMIN
-            - ORGANIZER
-  responses:
-    Unauthorized:
-      description: Unauthorized access (missing or invalid token)
-    Forbidden:
-      description: Forbidden (insufficient permissions)
-    BadRequest:
-      description: Validation error / bad request
+            - PENDING
+            - COMPLETED
+            - CANCELLED
+          example: COMPLETED
+        orderTickets:
+          type: array
+          items:
+            type: object
+            properties:
+              ticketId:
+                type: integer
+                example: 10
+              quantity:
+                type: integer
+                example: 2
+        orderDate:
+          type: string
+          format: date-time
+          example: '2025-02-15T14:30:00Z'
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-02-15T10:30:00Z'

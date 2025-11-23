@@ -1,0 +1,38 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  userId:
+    type: integer
+    example: 2
+  total:
+    type: number
+    format: float
+    example: 99.99
+  orderStatus:
+    type: string
+    enum:
+      - PENDING
+      - COMPLETED
+      - CANCELLED
+    example: COMPLETED
+  orderTickets:
+    type: array
+    items:
+      type: object
+      properties:
+        ticketId:
+          type: integer
+          example: 10
+        quantity:
+          type: integer
+          example: 2
+  orderDate:
+    type: string
+    format: date-time
+    example: '2025-02-15T14:30:00Z'
+  createdAt:
+    type: string
+    format: date-time
+    example: '2025-02-15T10:30:00Z'
