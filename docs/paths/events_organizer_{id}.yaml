@@ -1,0 +1,19 @@
+get:
+  summary: Get events by organizer
+  description: Returns all events created by a specific organizer (public access)
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Organizer (User) ID
+  responses:
+    '200':
+      description: List of events by organizer
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/Event.yaml

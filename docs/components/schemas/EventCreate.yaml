@@ -1,0 +1,33 @@
+type: object
+required:
+  - title
+  - date
+  - location
+  - ticketsAvailable
+properties:
+  title:
+    type: string
+    example: "Summer Music Festival"
+  date:
+    type: string
+    format: date-time
+    example: "2025-07-15T18:00:00Z"
+  location:
+    type: string
+    example: "Central Park, New York"
+  description:
+    type: string
+    example: "Annual summer music festival featuring top artists"
+  eventType:
+    type: string
+    enum: [SPORTS, MUSIC, MOVIES, OTHER]
+    default: "OTHER"
+    example: "MUSIC"
+  ticketsAvailable:
+    type: integer
+    minimum: 1
+    example: 500
+  organizerId:
+    type: integer
+    description: "Only ADMINs can specify this. Otherwise, defaults to authenticated user."
+    example: 2

@@ -1,0 +1,91 @@
+get:
+  summary: Get event by ID
+  description: Returns a single event by its ID (public access)
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Event ID
+  responses:
+    '200':
+      description: Event details
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Event.yaml
+    '404':
+      description: Event not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "event not found"
+
+put:
+  summary: Update an event
+  description: Update an existing event (ADMIN or event ORGANIZER only)
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Event ID
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/EventUpdate.yaml
+  responses:
+    '200':
+      description: Event updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Event.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '403':
+      $ref: ../components/responses/Forbidden.yaml
+    '404':
+      description: Event not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "event not found"
+
+delete:
+  summary: Delete an event
+  description: Delete an event (ADMIN or event ORGANIZER only)
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Event ID
+  responses:
+    '204':
+      description: Event deleted successfully
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '403':
+      $ref: ../components/responses/Forbidden.yaml
+    '404':
+      description: Event not found
