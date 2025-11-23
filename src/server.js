@@ -4,11 +4,11 @@ import morgan from 'morgan';
 import swaggerUI from 'swagger-ui-express'
 import YAML from  'yamljs'
 
-import authRoutes from '../src/routes/authRoutes.js';
-import userRoutes from '../src/routes/userRoutes.js';
-import eventRoutes from '../src/routes/eventRoutes.js';
-import ticketRoutes from '../src/routes/ticketRoutes.js';
-import orderRoutes from '../src/routes/orderRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
+import ticketRoutes from './routes/ticketRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,7 +17,7 @@ app.use(cors());
 app.use(morgan('tiny'));
 app.use(express.json());
 
-const specs = YAML.load('./public/bundled.yaml');
+const specs = YAML.load('../public/bundled.yaml');
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 
 app.use('/api/auth', authRoutes);
