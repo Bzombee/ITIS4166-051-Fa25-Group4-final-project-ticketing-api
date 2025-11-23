@@ -1,5 +1,7 @@
 patch:
   summary: Update a user's role
+  tags:
+    - Users
   description: Change the role of a user (ADMIN only)
   security:
     - bearerAuth: []

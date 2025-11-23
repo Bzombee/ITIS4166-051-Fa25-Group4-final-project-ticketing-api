@@ -1,5 +1,7 @@
 get:
   summary: Get current logged-in user
+  tags:
+  - Users
   description: Returns information about the authenticated user
   security:
     - bearerAuth: []
@@ -14,6 +16,8 @@ get:
       $ref: ../components/responses/Unauthorized.yaml
 put:
   summary: Update current user
+  tags:
+    - Users
   description: Update authenticated user's information
   security:
     - bearerAuth: []
@@ -34,8 +38,12 @@ put:
       $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
+    '409':
+      $ref: ../components/responses/Conflict.yaml
 delete:
   summary: Delete current user
+  tags:
+    - Users
   description: Deletes the authenticated user
   security:
     - bearerAuth: []
@@ -44,3 +52,5 @@ delete:
       description: User deleted successfully
     '401':
       $ref: ../components/responses/Unauthorized.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml

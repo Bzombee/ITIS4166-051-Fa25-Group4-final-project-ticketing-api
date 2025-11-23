@@ -17,7 +17,7 @@ patch:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/Order.yaml
+            $ref: ../components/schemas/OrderCancel.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

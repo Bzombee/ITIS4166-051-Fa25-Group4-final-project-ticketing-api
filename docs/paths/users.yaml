@@ -1,5 +1,7 @@
 get:
   summary: Get all users
+  tags:
+    - Users
   description: Returns a list of all users (ADMIN only)
   security:
     - bearerAuth: []
