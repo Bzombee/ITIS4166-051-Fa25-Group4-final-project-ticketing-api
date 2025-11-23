@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://localhost:3000/api
     description: local development server
-  - url: https://itis4166-051-fa25-group4-final-project.onrender.com
+  - url: https://itis4166-051-fa25-group4-final-project.onrender.com/api
     description: Production server on render
 security:
   - bearerAuth: []
