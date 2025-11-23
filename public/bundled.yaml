@@ -5,6 +5,9 @@ info:
   description: API for managing users and events in the ticketing system.
 servers:
   - url: http://localhost:3000/api
+    description: local development server
+  - url: https://itis4166-051-fa25-group4-final-project.onrender.com
+    description: Production server on render
 security:
   - bearerAuth: []
 tags:
