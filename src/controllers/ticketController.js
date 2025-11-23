@@ -26,30 +26,19 @@ export async function createTicketHandler(req, res) {
    };
   const newTicket = await ticketService.createTicketsForEvent(data);
 
-  res.status(201).json({newTicket});
+  res.status(201).json(newTicket);
 }
 
 export async function updateTicketHandler(req, res) {
   const { id } = req.params;
-  const data = {};
-
-  if (req.body.price !== undefined) {
-    data.price = req.body.price;
-  }
-
-  if (req.body.seatNumber !== undefined) {
-    data.seatNumber = req.body.seatNumber;
-  }
+  const data = {
+    price: parseFloat(req.body.price),
+    seatNumber: req.body.seatNumber
+  };
 
   const ticket = await ticketService.updateTicket(parseInt(id), data);
 
-  if (!ticket) {
-    return res.status(404).json({ error: 'Ticket not found' });
-  }
-
-  res
-    .status(200)
-    .json({ message: 'ticket has been updated', ticketId: ticket.id });
+  res.status(200).json(ticket);
 }
 
 export async function deleteTicketHandler(req, res) {

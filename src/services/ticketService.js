@@ -39,7 +39,13 @@ export async function createTicketsForEvent(data) {
 }
 
 export async function updateTicket(id, data) {
-  return await ticketRepo.updateTicket(id, data);
+  const ticket = await ticketRepo.updateTicket(id, data);
+  if(ticket) return ticket;
+  else {
+    const error = new Error(`Cannot find ticket with id ${id}`);
+    error.status = 404;
+    throw error;
+  }
 }
 
 export async function deleteTicket(id) {
