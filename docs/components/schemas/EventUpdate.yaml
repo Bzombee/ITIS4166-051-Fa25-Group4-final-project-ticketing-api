@@ -1,0 +1,19 @@
+type: object
+properties:
+  title:
+    type: string
+    example: "Summer Music Festival 2025"
+  location:
+    type: string
+    example: "Central Park, New York"
+  description:
+    type: string
+    example: "Updated festival description"
+  eventType:
+    type: string
+    enum: [SPORTS, MUSIC, MOVIES, OTHER]
+    example: "MUSIC"
+  ticketsAvailable:
+    type: integer
+    minimum: 0
+    example: 450

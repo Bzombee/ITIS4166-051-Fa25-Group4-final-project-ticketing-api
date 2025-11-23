@@ -39,3 +39,94 @@ UserRoleUpdate:
     role:
       type: string
       enum: [CUSTOMER, ADMIN, ORGANIZER]
+
+Event:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    title:
+      type: string
+      example: "Summer Music Festival"
+    date:
+      type: string
+      format: date-time
+      example: "2025-07-15T18:00:00Z"
+    location:
+      type: string
+      example: "Central Park, New York"
+    description:
+      type: string
+      example: "Annual summer music festival featuring top artists"
+    eventType:
+      type: string
+      enum: [SPORTS, MUSIC, MOVIES, OTHER]
+      example: "MUSIC"
+    ticketsAvailable:
+      type: integer
+      example: 500
+    organizerId:
+      type: integer
+      example: 2
+    createdAt:
+      type: string
+      format: date-time
+      example: "2025-01-01T12:00:00Z"
+
+EventCreate:
+  type: object
+  required:
+    - title
+    - date
+    - location
+    - ticketsAvailable
+  properties:
+    title:
+      type: string
+      example: "Summer Music Festival"
+    date:
+      type: string
+      format: date-time
+      example: "2025-07-15T18:00:00Z"
+    location:
+      type: string
+      example: "Central Park, New York"
+    description:
+      type: string
+      example: "Annual summer music festival featuring top artists"
+    eventType:
+      type: string
+      enum: [SPORTS, MUSIC, MOVIES, OTHER]
+      default: "OTHER"
+      example: "MUSIC"
+    ticketsAvailable:
+      type: integer
+      minimum: 1
+      example: 500
+    organizerId:
+      type: integer
+      description: "Only ADMINs can specify this. Otherwise, defaults to authenticated user."
+      example: 2
+
+EventUpdate:
+  type: object
+  properties:
+    title:
+      type: string
+      example: "Summer Music Festival 2025"
+    location:
+      type: string
+      example: "Central Park, New York"
+    description:
+      type: string
+      example: "Updated festival description"
+    eventType:
+      type: string
+      enum: [SPORTS, MUSIC, MOVIES, OTHER]
+      example: "MUSIC"
+    ticketsAvailable:
+      type: integer
+      minimum: 0
+      example: 450
+
