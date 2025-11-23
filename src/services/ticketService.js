@@ -48,11 +48,25 @@ export async function updateTicket(ticketId, data) {
     throw error;
   }
 
-  return await ticketRepo.updateTicket(ticketId, data);
+  if(existing.ticketStatus === "AVAILABLE") return await ticketRepo.updateTicket(ticketId, data);
+  else {
+    const error = new Error(`Cannot update ticket with id ${ticketId} because it is sold`);
+    error.status = 409;
+    throw error;
+  }
+
+
 }
 
 export async function deleteTicket(id) {
   const ticketToDelete = await getTicket(id);
+
+  if (!ticketToDelete) {
+    const error = new Error(`Ticket with id ${id} not found`);
+    error.status = 404;
+    throw error;
+  }
+
   if(ticketToDelete.ticketStatus === "AVAILABLE") return await ticketRepo.deleteTicket(id);
   else {
     const error = new Error(`Cannot delete ticket with id ${id} because it is sold`);
