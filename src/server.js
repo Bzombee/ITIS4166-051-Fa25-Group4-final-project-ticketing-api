@@ -1,9 +1,11 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import cors from 'cors';
 import morgan from 'morgan';
 import swaggerUI from 'swagger-ui-express'
 import YAML from  'yamljs'
 import path from "path";
+import 'dotenv/config';
 import { fileURLToPath } from "url";
 
 
@@ -19,9 +21,23 @@ import orderRoutes from './routes/orderRoutes.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(morgan('tiny'));
 app.use(express.json());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+
+app.use(limiter);
+import 'dotenv/config';
+
+if (!process.env.JWT_SECRET || !process.env.JWT_EXPIRES_IN) {
+  throw new Error('JWT_SECRET or JWT_EXPIRES_IN is missing in environment variables');
+}
+
 
 const yamlPath = path.join(__dirname, "../public/bundled.yaml");
 const specs = YAML.load(yamlPath);
