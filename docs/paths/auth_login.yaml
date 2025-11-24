@@ -20,13 +20,13 @@ post:
               type: string
               example: "12345678"
   responses:
-    '201':
-      description: User created successfully
+    '200':
+      description: User logged-in successfully
       content:
         application/json:
           schema:
             $ref: ../components/schemas/AuthLogin.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
-    '409':
+    '401':
       $ref: ../components/responses/Conflict.yaml
